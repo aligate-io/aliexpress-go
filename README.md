@@ -56,7 +56,7 @@ check) needs two headers:
 
 Base URL: `https://aligate-aliexpress-data-api.p.rapidapi.com`
 
-Get a key from the **[AliGate listing on RapidAPI](https://rapidapi.com/)** (linked from
+Get a key from the **[AliGate listing on RapidAPI](https://aligate-aliexpress-data-api.p.rapidapi.com)** (linked from
 [aligate.io/docs](https://aligate.io/docs)).
 
 ---
@@ -104,7 +104,7 @@ func main() {
 ## Documentation
 
 - **Docs:** [aligate.io/docs](https://aligate.io/docs) — with a page per language.
-- **API key & plans:** [AliGate on RapidAPI](https://rapidapi.com/).
+- **API key & plans:** [AliGate on RapidAPI](https://aligate-aliexpress-data-api.p.rapidapi.com).
 - **Go reference:** the [`docs/`](docs) directory in this repository.
 
 ---

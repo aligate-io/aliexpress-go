@@ -1,6 +1,7 @@
 # Keep our hand-maintained files from being overwritten by the generator.
 README.md
 .gitignore
+LICENSE
 
 # We use GitHub Actions, not Travis; and don't ship the generator's push helper.
 .travis.yml
