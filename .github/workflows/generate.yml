@@ -1,0 +1,78 @@
+name: Generate, Commit & Release Go SDK
+
+# Regenerate the Go client whenever the API spec changes on main, build it, commit the
+# regenerated code back, and tag a release. Go has no package registry — `go get` pulls
+# directly from this tagged git tree, so the generated code is committed here.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "openapi.yaml"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Override SDK version (semver, e.g. 2.1.1). Defaults to the spec's API version."
+        required: false
+        type: string
+
+permissions:
+  contents: write # commit regenerated code + create tags/releases
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+
+      - name: Resolve SDK version
+        id: ver
+        run: |
+          if [ -n "${{ inputs.version }}" ]; then
+            V="${{ inputs.version }}"
+          else
+            RAW="$(grep -E '^  version:' openapi.yaml | head -1 | sed -E 's/.*version:[[:space:]]*"?([0-9.]+)"?.*/\1/')"
+            dots="$(grep -o '\.' <<<"$RAW" | wc -l | tr -d ' ')"
+            case "$dots" in
+              0) V="${RAW}.0.0" ;;
+              1) V="${RAW}.0" ;;
+              *) V="$RAW" ;;
+            esac
+          fi
+          echo "version=$V" >> "$GITHUB_OUTPUT"
+          echo "Resolved SDK version: $V"
+
+      - name: Generate Go client (Docker)
+        run: ./scripts/generate.sh "${{ steps.ver.outputs.version }}"
+
+      - name: Tidy & build
+        run: |
+          go mod tidy   # pulls in test deps (testify) the generator omits from go.mod
+          go build ./...
+          go vet ./...
+
+      - name: Commit regenerated code
+        run: |
+          git config user.name  "aligate-bot"
+          git config user.email "support@aligate.io"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "chore: regenerate Go SDK from openapi.yaml (v${{ steps.ver.outputs.version }})"
+            git push
+          fi
+
+      - name: Tag & release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="v${{ steps.ver.outputs.version }}"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "Release $TAG already exists; skipping."
+          else
+            gh release create "$TAG" --title "$TAG" --generate-notes
+          fi

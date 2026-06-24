@@ -1,0 +1,4821 @@
+openapi: 3.0.3
+info:
+  description: |
+    Real-time AliExpress data parser covering products, product reviews, sellers, store
+    coupons, a seller's product catalog, and product search by text or image.
+    Products: pricing, stock status, shipping options, seller information, product
+    configurations (SKUs), and more - scoped to a specific country and currency.
+    Reviews: customer ratings and feedback for a product.
+    Sellers: full store profile with ratings, feedback, and categories.
+    Coupons: active seller coupon codes with discounts, thresholds, budgets, and expiry.
+    Seller products: a store's product catalog, paginated and best-selling first.
+    Search: find products by keyword or by uploading an image, returning paginated product
+    results with their categories.
+  title: AliExpress Parser API
+  version: "2.1"
+  x-category: eCommerce
+  x-long-description: |
+    Fetches live data from AliExpress across several endpoints: product (by product ID, country,
+    and currency), product reviews (by product ID), seller (store profile by store number),
+    seller coupons (active coupon campaigns by store number, shipping country, and currency),
+    seller products (a store's paginated product catalog by store number, shipping country, and
+    currency), text search (products matching a keyword), and image search (products matching an
+    uploaded image). Prices, shipping options, coupon eligibility, and search results are returned
+    for the requested country and currency. Typical response time is 1-5 seconds.
+servers:
+- url: https://aligate-aliexpress-data-api.p.rapidapi.com
+paths:
+  /api/v2/product:
+    get:
+      description: |
+        Returns detailed information for a single AliExpress product: title, images, pricing,
+        available SKU variants, stock, shipping options, and seller details. Prices and
+        shipping are resolved for the requested country and currency.
+      operationId: Get Product Info
+      parameters:
+      - description: "AliExpress product ID, taken from the product page URL."
+        explode: true
+        in: query
+        name: product_id
+        required: true
+        schema:
+          example: 1005004530469845
+          type: integer
+        style: form
+      - description: Country code (ISO 3166-1 alpha-2) used for pricing and shipping
+          eligibility.
+        explode: true
+        in: query
+        name: country
+        required: true
+        schema:
+          enum:
+          - US
+          - CA
+          - MX
+          - BR
+          - AR
+          - CL
+          - CO
+          - PE
+          - EC
+          - UY
+          - VE
+          - CR
+          - PA
+          - DO
+          - GT
+          - GB
+          - IE
+          - FR
+          - DE
+          - ES
+          - PT
+          - IT
+          - NL
+          - BE
+          - LU
+          - AT
+          - CH
+          - SE
+          - "false"
+          - DK
+          - FI
+          - IS
+          - PL
+          - CZ
+          - SK
+          - HU
+          - RO
+          - BG
+          - GR
+          - HR
+          - SI
+          - LT
+          - LV
+          - EE
+          - RS
+          - UA
+          - BY
+          - RU
+          - TR
+          - IL
+          - SA
+          - AE
+          - QA
+          - KW
+          - BH
+          - OM
+          - JO
+          - LB
+          - IQ
+          - AZ
+          - GE
+          - KZ
+          - UZ
+          - CN
+          - HK
+          - TW
+          - JP
+          - KR
+          - IN
+          - PK
+          - BD
+          - LK
+          - ID
+          - TH
+          - VN
+          - MY
+          - SG
+          - PH
+          - KH
+          - AU
+          - NZ
+          - ZA
+          - NG
+          - EG
+          - MA
+          - DZ
+          - TN
+          - KE
+          - GH
+          example: PL
+          type: string
+        style: form
+      - description: Currency code (ISO 4217) for the returned prices.
+        explode: true
+        in: query
+        name: currency
+        required: true
+        schema:
+          enum:
+          - USD
+          - EUR
+          - GBP
+          - AUD
+          - CAD
+          - RUB
+          - BRL
+          - CLP
+          - COP
+          - MXN
+          - ILS
+          - INR
+          - JPY
+          - KRW
+          - NOK
+          - NZD
+          - PHP
+          - PLN
+          - SEK
+          - THB
+          - TRY
+          - UAH
+          - VND
+          - IDR
+          - AED
+          - SAR
+          - CHF
+          - CZK
+          - DKK
+          - HKD
+          - HUF
+          - SGD
+          - ZAR
+          - KZT
+          - MYR
+          - TWD
+          example: PLN
+          type: string
+        style: form
+      - description: Response language locale.
+        explode: true
+        in: query
+        name: locale
+        required: false
+        schema:
+          default: en_US
+          enum:
+          - en_US
+          - en_GB
+          - es_ES
+          - es_CO
+          - pt_BR
+          - pt_PT
+          - fr_FR
+          - de_DE
+          - it_IT
+          - nl_NL
+          - pl_PL
+          - ru_RU
+          - ru_PL
+          - tr_TR
+          - ko_KR
+          - ja_JP
+          - th_TH
+          - vi_VN
+          - id_ID
+          - ar_SA
+          - he_IL
+          - uk_UA
+          - zh_CN
+          example: en_US
+          type: string
+        style: form
+      - description: Apply the new-buyer welcome discount to the returned price.
+        explode: true
+        in: query
+        name: with_welcome_discount
+        required: false
+        schema:
+          default: false
+          example: false
+          type: boolean
+        style: form
+      - description: |
+          Fetch the full product description (formatted HTML, plain text, and image gallery), returned in the `description` field. Note: enabling this adds approximately 600-750 ms to the response time.
+        explode: true
+        in: query
+        name: with_description
+        required: false
+        schema:
+          default: false
+          example: false
+          type: boolean
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ParseResponse"
+          description: Product data successfully parsed
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Missing or invalid query parameters
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Invalid or missing RapidAPI credentials
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Product not found on AliExpress
+        "502":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Upstream parser error
+      summary: Get Product Info
+  /api/v2/product/reviews:
+    get:
+      description: |
+        Returns buyer reviews for an AliExpress product, including the rating, buyer, review
+        text (with translation when available), images, and seller replies, plus a per-star
+        rating breakdown. Results are paginated and can be filtered (for example, only reviews
+        with images or a specific star rating) and sorted. A product with no reviews returns
+        HTTP 200 with an empty reviews array.
+      operationId: Get Product Reviews
+      parameters:
+      - description: "AliExpress product ID, taken from the product page URL."
+        explode: true
+        in: query
+        name: product_id
+        required: true
+        schema:
+          example: 1005004530469845
+          type: integer
+        style: form
+      - description: Country code (ISO 3166-1 alpha-2) used for pricing and shipping
+          eligibility.
+        explode: true
+        in: query
+        name: country
+        required: true
+        schema:
+          enum:
+          - US
+          - CA
+          - MX
+          - BR
+          - AR
+          - CL
+          - CO
+          - PE
+          - EC
+          - UY
+          - VE
+          - CR
+          - PA
+          - DO
+          - GT
+          - GB
+          - IE
+          - FR
+          - DE
+          - ES
+          - PT
+          - IT
+          - NL
+          - BE
+          - LU
+          - AT
+          - CH
+          - SE
+          - "false"
+          - DK
+          - FI
+          - IS
+          - PL
+          - CZ
+          - SK
+          - HU
+          - RO
+          - BG
+          - GR
+          - HR
+          - SI
+          - LT
+          - LV
+          - EE
+          - RS
+          - UA
+          - BY
+          - RU
+          - TR
+          - IL
+          - SA
+          - AE
+          - QA
+          - KW
+          - BH
+          - OM
+          - JO
+          - LB
+          - IQ
+          - AZ
+          - GE
+          - KZ
+          - UZ
+          - CN
+          - HK
+          - TW
+          - JP
+          - KR
+          - IN
+          - PK
+          - BD
+          - LK
+          - ID
+          - TH
+          - VN
+          - MY
+          - SG
+          - PH
+          - KH
+          - AU
+          - NZ
+          - ZA
+          - NG
+          - EG
+          - MA
+          - DZ
+          - TN
+          - KE
+          - GH
+          example: PL
+          type: string
+        style: form
+      - description: Response language locale.
+        explode: true
+        in: query
+        name: locale
+        required: false
+        schema:
+          default: en_US
+          enum:
+          - en_US
+          - en_GB
+          - es_ES
+          - es_CO
+          - pt_BR
+          - pt_PT
+          - fr_FR
+          - de_DE
+          - it_IT
+          - nl_NL
+          - pl_PL
+          - ru_RU
+          - ru_PL
+          - tr_TR
+          - ko_KR
+          - ja_JP
+          - th_TH
+          - vi_VN
+          - id_ID
+          - ar_SA
+          - he_IL
+          - uk_UA
+          - zh_CN
+          example: en_US
+          type: string
+        style: form
+      - description: Page number of reviews to return (starts at 1).
+        explode: true
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          example: 1
+          type: integer
+        style: form
+      - description: Number of reviews per page (maximum 20).
+        explode: true
+        in: query
+        name: page_size
+        required: false
+        schema:
+          default: 20
+          example: 20
+          type: integer
+        style: form
+      - description: |
+          Restrict reviews to a subset. image = with photos, additional = with follow-up feedback, local = from the requested country, 1-5 = that star rating. Empty = all.
+        explode: true
+        in: query
+        name: filter
+        required: false
+        schema:
+          enum:
+          - image
+          - additional
+          - local
+          - "1"
+          - "2"
+          - "3"
+          - "4"
+          - "5"
+          type: string
+        style: form
+      - description: Sort order for the returned reviews.
+        explode: true
+        in: query
+        name: sort
+        required: false
+        schema:
+          default: complex_default
+          enum:
+          - complex_default
+          - valid_date
+          example: complex_default
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReviewsParseResponse"
+          description: Reviews successfully parsed (reviews is empty when the product
+            has none)
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Missing or invalid query parameters
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Invalid or missing RapidAPI credentials
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Product not found on AliExpress
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Reviews parser not configured on this deployment
+      summary: Get Product Reviews
+  /api/v2/seller:
+    get:
+      description: |
+        Returns the store profile for an AliExpress seller: store name, ratings, feedback
+        scores, follower count, store age, and product categories. Provide the store number
+        from the store URL. The seller ID is optional and is resolved automatically from the
+        store number when omitted.
+      operationId: Get Seller Info
+      parameters:
+      - description: "AliExpress store number, taken from the store URL (aliexpress.com/store/{store_num})."
+        explode: true
+        in: query
+        name: store_num
+        required: true
+        schema:
+          example: 301635
+          type: integer
+        style: form
+      - description: |
+          AliExpress seller (admin seq) ID. Optional; resolved automatically from the store number when omitted. It cannot be used in place of the store number.
+        explode: true
+        in: query
+        name: seller_id
+        required: false
+        schema:
+          example: 0
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SellerParseResponse"
+          description: Seller data successfully parsed
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Missing or invalid query parameters
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Invalid or missing RapidAPI credentials
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Seller parser not configured on this deployment
+      summary: Get Seller Info
+  /api/v2/seller/coupons:
+    get:
+      description: |
+        Returns the active coupon campaigns for an AliExpress store, including code, discount
+        amount, minimum spend, budget, and expiry. Coupon eligibility and amounts depend on the
+        requested shipping country and currency. Provide the store number from the store URL.
+        A store with no active coupons returns HTTP 200 with an empty items array.
+      operationId: Get Seller Coupons
+      parameters:
+      - description: "AliExpress store number, taken from the store URL (aliexpress.com/store/{store_num})."
+        explode: true
+        in: query
+        name: store_num
+        required: true
+        schema:
+          example: 301635
+          type: integer
+        style: form
+      - description: Country code (ISO 3166-1 alpha-2) used for pricing and shipping
+          eligibility.
+        explode: true
+        in: query
+        name: country
+        required: true
+        schema:
+          enum:
+          - US
+          - CA
+          - MX
+          - BR
+          - AR
+          - CL
+          - CO
+          - PE
+          - EC
+          - UY
+          - VE
+          - CR
+          - PA
+          - DO
+          - GT
+          - GB
+          - IE
+          - FR
+          - DE
+          - ES
+          - PT
+          - IT
+          - NL
+          - BE
+          - LU
+          - AT
+          - CH
+          - SE
+          - "false"
+          - DK
+          - FI
+          - IS
+          - PL
+          - CZ
+          - SK
+          - HU
+          - RO
+          - BG
+          - GR
+          - HR
+          - SI
+          - LT
+          - LV
+          - EE
+          - RS
+          - UA
+          - BY
+          - RU
+          - TR
+          - IL
+          - SA
+          - AE
+          - QA
+          - KW
+          - BH
+          - OM
+          - JO
+          - LB
+          - IQ
+          - AZ
+          - GE
+          - KZ
+          - UZ
+          - CN
+          - HK
+          - TW
+          - JP
+          - KR
+          - IN
+          - PK
+          - BD
+          - LK
+          - ID
+          - TH
+          - VN
+          - MY
+          - SG
+          - PH
+          - KH
+          - AU
+          - NZ
+          - ZA
+          - NG
+          - EG
+          - MA
+          - DZ
+          - TN
+          - KE
+          - GH
+          example: PL
+          type: string
+        style: form
+      - description: Currency code (ISO 4217) for the returned prices.
+        explode: true
+        in: query
+        name: currency
+        required: true
+        schema:
+          enum:
+          - USD
+          - EUR
+          - GBP
+          - AUD
+          - CAD
+          - RUB
+          - BRL
+          - CLP
+          - COP
+          - MXN
+          - ILS
+          - INR
+          - JPY
+          - KRW
+          - NOK
+          - NZD
+          - PHP
+          - PLN
+          - SEK
+          - THB
+          - TRY
+          - UAH
+          - VND
+          - IDR
+          - AED
+          - SAR
+          - CHF
+          - CZK
+          - DKK
+          - HKD
+          - HUF
+          - SGD
+          - ZAR
+          - KZT
+          - MYR
+          - TWD
+          example: PLN
+          type: string
+        style: form
+      - description: |
+          AliExpress seller (admin seq) ID. Optional; resolved automatically from the store number when omitted.
+        explode: true
+        in: query
+        name: seller_id
+        required: false
+        schema:
+          example: 0
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CouponsParseResponse"
+          description: Coupons successfully parsed (items is empty when the seller
+            has no active coupons)
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Missing or invalid query parameters
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Invalid or missing RapidAPI credentials
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Store not found on AliExpress
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Coupon parser not configured on this deployment
+      summary: Get Seller Coupons
+  /api/v2/seller/products:
+    get:
+      description: |
+        Returns a seller's product catalog (the products the store sells), paginated and sorted
+        best-selling first. Each product carries the card-level fields shown on the store page
+        (title, image, price, rating, units sold) — full product detail (description, shipping,
+        specifications, variations) is available via the Get Product Info endpoint. Results are
+        influenced by the requested shipping country and currency. Provide the store number from
+        the store URL; the seller ID is optional and resolved automatically from the store number
+        when omitted. A page beyond the last returns HTTP 200 with an empty products array.
+      operationId: Get Seller Products
+      parameters:
+      - description: "AliExpress store number, taken from the store URL (aliexpress.com/store/{store_num})."
+        explode: true
+        in: query
+        name: store_num
+        required: true
+        schema:
+          example: 301635
+          type: integer
+        style: form
+      - description: Country code (ISO 3166-1 alpha-2) used for pricing and shipping
+          eligibility.
+        explode: true
+        in: query
+        name: country
+        required: true
+        schema:
+          enum:
+          - US
+          - CA
+          - MX
+          - BR
+          - AR
+          - CL
+          - CO
+          - PE
+          - EC
+          - UY
+          - VE
+          - CR
+          - PA
+          - DO
+          - GT
+          - GB
+          - IE
+          - FR
+          - DE
+          - ES
+          - PT
+          - IT
+          - NL
+          - BE
+          - LU
+          - AT
+          - CH
+          - SE
+          - "false"
+          - DK
+          - FI
+          - IS
+          - PL
+          - CZ
+          - SK
+          - HU
+          - RO
+          - BG
+          - GR
+          - HR
+          - SI
+          - LT
+          - LV
+          - EE
+          - RS
+          - UA
+          - BY
+          - RU
+          - TR
+          - IL
+          - SA
+          - AE
+          - QA
+          - KW
+          - BH
+          - OM
+          - JO
+          - LB
+          - IQ
+          - AZ
+          - GE
+          - KZ
+          - UZ
+          - CN
+          - HK
+          - TW
+          - JP
+          - KR
+          - IN
+          - PK
+          - BD
+          - LK
+          - ID
+          - TH
+          - VN
+          - MY
+          - SG
+          - PH
+          - KH
+          - AU
+          - NZ
+          - ZA
+          - NG
+          - EG
+          - MA
+          - DZ
+          - TN
+          - KE
+          - GH
+          example: PL
+          type: string
+        style: form
+      - description: Currency code (ISO 4217) for the returned prices.
+        explode: true
+        in: query
+        name: currency
+        required: true
+        schema:
+          enum:
+          - USD
+          - EUR
+          - GBP
+          - AUD
+          - CAD
+          - RUB
+          - BRL
+          - CLP
+          - COP
+          - MXN
+          - ILS
+          - INR
+          - JPY
+          - KRW
+          - NOK
+          - NZD
+          - PHP
+          - PLN
+          - SEK
+          - THB
+          - TRY
+          - UAH
+          - VND
+          - IDR
+          - AED
+          - SAR
+          - CHF
+          - CZK
+          - DKK
+          - HKD
+          - HUF
+          - SGD
+          - ZAR
+          - KZT
+          - MYR
+          - TWD
+          example: PLN
+          type: string
+        style: form
+      - description: Response language locale.
+        explode: true
+        in: query
+        name: locale
+        required: false
+        schema:
+          default: en_US
+          enum:
+          - en_US
+          - en_GB
+          - es_ES
+          - es_CO
+          - pt_BR
+          - pt_PT
+          - fr_FR
+          - de_DE
+          - it_IT
+          - nl_NL
+          - pl_PL
+          - ru_RU
+          - ru_PL
+          - tr_TR
+          - ko_KR
+          - ja_JP
+          - th_TH
+          - vi_VN
+          - id_ID
+          - ar_SA
+          - he_IL
+          - uk_UA
+          - zh_CN
+          example: en_US
+          type: string
+        style: form
+      - description: |
+          AliExpress seller (admin seq) ID. Optional; resolved automatically from the store number when omitted.
+        explode: true
+        in: query
+        name: seller_id
+        required: false
+        schema:
+          example: 0
+          type: integer
+        style: form
+      - description: Page number of results to return (starts at 1).
+        explode: true
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          example: 1
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SellerProductsParseResponse"
+          description: Catalog page parsed (products is empty when the page is beyond
+            the last)
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: "Missing or invalid query parameters (store_num, country and\
+            \ currency are required)"
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Invalid or missing RapidAPI credentials
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Store not found on AliExpress
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Seller-products parser not configured on this deployment
+      summary: Get Seller Products
+  /api/v2/search/image:
+    post:
+      description: |
+        Finds AliExpress products that visually match an uploaded image. Provide the image as a
+        base64-encoded string in the JSON body. Results are influenced by the requested shipping
+        country and currency, and are paginated. A query with no visual matches returns HTTP 200
+        with an empty products array.
+      operationId: Search By Image
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ImageSearchRequest"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ImageSearchParseResponse"
+          description: Image search completed (products is empty when there are no
+            matches)
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: "Missing or invalid request body (image64, country and currency\
+            \ are required)"
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Invalid or missing RapidAPI credentials
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Image-search parser not configured on this deployment
+      summary: Search By Image
+  /api/v2/search/text:
+    get:
+      description: |
+        Searches AliExpress for a keyword and returns the matching products plus the available
+        product categories for that query. Each product carries the card-level fields shown on the
+        results page (title, image, price, rating, units sold) — full product detail (description,
+        shipping, specifications, variations) is available via the Get Product Info endpoint.
+        Results are influenced by the requested shipping country and currency, and are paginated.
+        A query with no matches returns HTTP 200 with an empty products array.
+      operationId: Search By Text
+      parameters:
+      - description: Search keyword.
+        explode: true
+        in: query
+        name: query
+        required: true
+        schema:
+          example: usb bluetooth adapter
+          type: string
+        style: form
+      - description: Country code (ISO 3166-1 alpha-2) used for pricing and shipping
+          eligibility.
+        explode: true
+        in: query
+        name: country
+        required: true
+        schema:
+          enum:
+          - US
+          - CA
+          - MX
+          - BR
+          - AR
+          - CL
+          - CO
+          - PE
+          - EC
+          - UY
+          - VE
+          - CR
+          - PA
+          - DO
+          - GT
+          - GB
+          - IE
+          - FR
+          - DE
+          - ES
+          - PT
+          - IT
+          - NL
+          - BE
+          - LU
+          - AT
+          - CH
+          - SE
+          - "false"
+          - DK
+          - FI
+          - IS
+          - PL
+          - CZ
+          - SK
+          - HU
+          - RO
+          - BG
+          - GR
+          - HR
+          - SI
+          - LT
+          - LV
+          - EE
+          - RS
+          - UA
+          - BY
+          - RU
+          - TR
+          - IL
+          - SA
+          - AE
+          - QA
+          - KW
+          - BH
+          - OM
+          - JO
+          - LB
+          - IQ
+          - AZ
+          - GE
+          - KZ
+          - UZ
+          - CN
+          - HK
+          - TW
+          - JP
+          - KR
+          - IN
+          - PK
+          - BD
+          - LK
+          - ID
+          - TH
+          - VN
+          - MY
+          - SG
+          - PH
+          - KH
+          - AU
+          - NZ
+          - ZA
+          - NG
+          - EG
+          - MA
+          - DZ
+          - TN
+          - KE
+          - GH
+          example: PL
+          type: string
+        style: form
+      - description: Currency code (ISO 4217) for the returned prices.
+        explode: true
+        in: query
+        name: currency
+        required: true
+        schema:
+          enum:
+          - USD
+          - EUR
+          - GBP
+          - AUD
+          - CAD
+          - RUB
+          - BRL
+          - CLP
+          - COP
+          - MXN
+          - ILS
+          - INR
+          - JPY
+          - KRW
+          - NOK
+          - NZD
+          - PHP
+          - PLN
+          - SEK
+          - THB
+          - TRY
+          - UAH
+          - VND
+          - IDR
+          - AED
+          - SAR
+          - CHF
+          - CZK
+          - DKK
+          - HKD
+          - HUF
+          - SGD
+          - ZAR
+          - KZT
+          - MYR
+          - TWD
+          example: PLN
+          type: string
+        style: form
+      - description: Response language locale.
+        explode: true
+        in: query
+        name: locale
+        required: false
+        schema:
+          default: en_US
+          enum:
+          - en_US
+          - en_GB
+          - es_ES
+          - es_CO
+          - pt_BR
+          - pt_PT
+          - fr_FR
+          - de_DE
+          - it_IT
+          - nl_NL
+          - pl_PL
+          - ru_RU
+          - ru_PL
+          - tr_TR
+          - ko_KR
+          - ja_JP
+          - th_TH
+          - vi_VN
+          - id_ID
+          - ar_SA
+          - he_IL
+          - uk_UA
+          - zh_CN
+          example: en_US
+          type: string
+        style: form
+      - description: Page number of results to return (starts at 1).
+        explode: true
+        in: query
+        name: page
+        required: false
+        schema:
+          default: 1
+          example: 1
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchParseResponse"
+          description: Search completed (products is empty when there are no matches)
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: "Missing or invalid query parameters (query, country and currency\
+            \ are required)"
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Invalid or missing RapidAPI credentials
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Search parser not configured on this deployment
+      summary: Search By Text
+  /api/v2/health:
+    get:
+      operationId: healthCheck
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/healthCheck_200_response"
+          description: Service is healthy
+      summary: Health check
+components:
+  parameters:
+    CountryParam:
+      description: Country code (ISO 3166-1 alpha-2) used for pricing and shipping
+        eligibility.
+      explode: true
+      in: query
+      name: country
+      required: true
+      schema:
+        enum:
+        - US
+        - CA
+        - MX
+        - BR
+        - AR
+        - CL
+        - CO
+        - PE
+        - EC
+        - UY
+        - VE
+        - CR
+        - PA
+        - DO
+        - GT
+        - GB
+        - IE
+        - FR
+        - DE
+        - ES
+        - PT
+        - IT
+        - NL
+        - BE
+        - LU
+        - AT
+        - CH
+        - SE
+        - "false"
+        - DK
+        - FI
+        - IS
+        - PL
+        - CZ
+        - SK
+        - HU
+        - RO
+        - BG
+        - GR
+        - HR
+        - SI
+        - LT
+        - LV
+        - EE
+        - RS
+        - UA
+        - BY
+        - RU
+        - TR
+        - IL
+        - SA
+        - AE
+        - QA
+        - KW
+        - BH
+        - OM
+        - JO
+        - LB
+        - IQ
+        - AZ
+        - GE
+        - KZ
+        - UZ
+        - CN
+        - HK
+        - TW
+        - JP
+        - KR
+        - IN
+        - PK
+        - BD
+        - LK
+        - ID
+        - TH
+        - VN
+        - MY
+        - SG
+        - PH
+        - KH
+        - AU
+        - NZ
+        - ZA
+        - NG
+        - EG
+        - MA
+        - DZ
+        - TN
+        - KE
+        - GH
+        example: PL
+        type: string
+      style: form
+    CurrencyParam:
+      description: Currency code (ISO 4217) for the returned prices.
+      explode: true
+      in: query
+      name: currency
+      required: true
+      schema:
+        enum:
+        - USD
+        - EUR
+        - GBP
+        - AUD
+        - CAD
+        - RUB
+        - BRL
+        - CLP
+        - COP
+        - MXN
+        - ILS
+        - INR
+        - JPY
+        - KRW
+        - NOK
+        - NZD
+        - PHP
+        - PLN
+        - SEK
+        - THB
+        - TRY
+        - UAH
+        - VND
+        - IDR
+        - AED
+        - SAR
+        - CHF
+        - CZK
+        - DKK
+        - HKD
+        - HUF
+        - SGD
+        - ZAR
+        - KZT
+        - MYR
+        - TWD
+        example: PLN
+        type: string
+      style: form
+    LocaleParam:
+      description: Response language locale.
+      explode: true
+      in: query
+      name: locale
+      required: false
+      schema:
+        default: en_US
+        enum:
+        - en_US
+        - en_GB
+        - es_ES
+        - es_CO
+        - pt_BR
+        - pt_PT
+        - fr_FR
+        - de_DE
+        - it_IT
+        - nl_NL
+        - pl_PL
+        - ru_RU
+        - ru_PL
+        - tr_TR
+        - ko_KR
+        - ja_JP
+        - th_TH
+        - vi_VN
+        - id_ID
+        - ar_SA
+        - he_IL
+        - uk_UA
+        - zh_CN
+        example: en_US
+        type: string
+      style: form
+    PageParam:
+      description: Page number of reviews to return (starts at 1).
+      explode: true
+      in: query
+      name: page
+      required: false
+      schema:
+        default: 1
+        example: 1
+        type: integer
+      style: form
+    PageSizeParam:
+      description: Number of reviews per page (maximum 20).
+      explode: true
+      in: query
+      name: page_size
+      required: false
+      schema:
+        default: 20
+        example: 20
+        type: integer
+      style: form
+    FilterParam:
+      description: |
+        Restrict reviews to a subset. image = with photos, additional = with follow-up feedback, local = from the requested country, 1-5 = that star rating. Empty = all.
+      explode: true
+      in: query
+      name: filter
+      required: false
+      schema:
+        enum:
+        - image
+        - additional
+        - local
+        - "1"
+        - "2"
+        - "3"
+        - "4"
+        - "5"
+        type: string
+      style: form
+    SortParam:
+      description: Sort order for the returned reviews.
+      explode: true
+      in: query
+      name: sort
+      required: false
+      schema:
+        default: complex_default
+        enum:
+        - complex_default
+        - valid_date
+        example: complex_default
+        type: string
+      style: form
+  schemas:
+    Error:
+      example:
+        error: error
+        code: 1
+      properties:
+        error:
+          type: string
+        code:
+          type: integer
+      type: object
+    ParseResponse:
+      description: Top-level response envelope returned by the gateway
+      example:
+        meta:
+          code: 200
+          attempt: 1
+          v: glo-1.0.0
+          source: referral
+          request_time: 2026-06-05 12:00:00
+          execution_time: 1.23s
+          trace_id: trace_id
+          pgeo: pgeo
+          hedge_fired: true
+          duration_ms: 1234
+        settings:
+          locale: en_US
+          currency: PLN
+          country: PL
+          item_id: 1005004530469845
+        item:
+          id: 1005006133180174
+          item_id_prefix: item_id_prefix
+          title: title
+          img_url: img_url
+          img_list:
+          - img_list
+          - img_list
+          video:
+            id: 0
+            url: url
+            thumbnail: thumbnail
+          price:
+            sku_id: sku_id
+            sku_id_int: 6
+            bulk_value: 1.4658129805029452
+            bulk_order: 5
+            min_value: 12.77
+            max_value: 18.5
+            original_min_value: 5.637376656633329
+            original_max_value: 2.3021358869347655
+            currency: PLN
+            country: PL
+          configurations:
+          - id: 7
+            product_id: 9
+            sku_id: sku_id
+            sku_attribute: sku_attribute
+            properties:
+            - id: id
+              name: name
+              value: value
+              image: image
+            - id: id
+              name: name
+              value: value
+              image: image
+            image: image
+            price:
+              value: 3.616076749251911
+              original_value: 2.027123023002322
+              currency: currency
+              country: country
+          - id: 7
+            product_id: 9
+            sku_id: sku_id
+            sku_attribute: sku_attribute
+            properties:
+            - id: id
+              name: name
+              value: value
+              image: image
+            - id: id
+              name: name
+              value: value
+              image: image
+            image: image
+            price:
+              value: 3.616076749251911
+              original_value: 2.027123023002322
+              currency: currency
+              country: country
+          ratings: 4.7
+          review_amount: 188
+          seller:
+            seller_admin_seq: 4
+            store_num: 7
+            store_name: store_name
+            store_url: store_url
+            positive_rate: 97.5%
+            score: 1
+          specs:
+            key: specs
+          default_shipping:
+            service_code: service_code
+            value: 1.0246457001441578
+            currency: currency
+            company: company
+            min_days: 1
+            max_days: 6
+            shipping_from: shipping_from
+            delivery_date: delivery_date
+            guaranteed_delivery_time: 7
+            free_shipping: true
+            tracking: true
+          shipping_methods:
+          - service_code: service_code
+            value: 1.0246457001441578
+            currency: currency
+            company: company
+            min_days: 1
+            max_days: 6
+            shipping_from: shipping_from
+            delivery_date: delivery_date
+            guaranteed_delivery_time: 7
+            free_shipping: true
+            tracking: true
+          - service_code: service_code
+            value: 1.0246457001441578
+            currency: currency
+            company: company
+            min_days: 1
+            max_days: 6
+            shipping_from: shipping_from
+            delivery_date: delivery_date
+            guaranteed_delivery_time: 7
+            free_shipping: true
+            tracking: true
+          category_path: category_path
+          category_name: category_name
+          breadcrumbs:
+          - breadcrumbs
+          - breadcrumbs
+          sales: 1200
+          avail_quantity: 976
+          in_stock: true
+          can_ship: true
+          is_not_found: true
+          has_welcome_discount: true
+          has_one_time_discount: true
+          description: ""
+          created_at: 2000-01-23T04:56:07.000+00:00
+          updated_at: 2000-01-23T04:56:07.000+00:00
+      properties:
+        meta:
+          $ref: "#/components/schemas/ParseMeta"
+        settings:
+          $ref: "#/components/schemas/ParseSettings"
+        item:
+          $ref: "#/components/schemas/Product"
+      type: object
+    ParseMeta:
+      description: Request metadata set by the gateway
+      example:
+        code: 200
+        attempt: 1
+        v: glo-1.0.0
+        source: referral
+        request_time: 2026-06-05 12:00:00
+        execution_time: 1.23s
+        trace_id: trace_id
+        pgeo: pgeo
+        hedge_fired: true
+        duration_ms: 1234
+      properties:
+        code:
+          example: 200
+          type: integer
+        attempt:
+          description: "Which parser attempt won (1 = referral, 2-3 = normal)"
+          example: 1
+          type: integer
+        v:
+          description: Parser version string
+          example: glo-1.0.0
+          type: string
+        source:
+          description: Parser path that produced the result
+          enum:
+          - referral
+          - normal
+          - no_session
+          example: referral
+          type: string
+        request_time:
+          description: UTC timestamp when the request was received
+          example: 2026-06-05 12:00:00
+          type: string
+        execution_time:
+          description: Total parse duration
+          example: 1.23s
+          type: string
+        trace_id:
+          description: Internal trace identifier
+          type: string
+        pgeo:
+          description: Inferred geographic region used by the parser
+          type: string
+        hedge_fired:
+          description: True when the fallback request was fired before the primary
+            responded
+          type: boolean
+        duration_ms:
+          description: End-to-end gateway duration in milliseconds
+          example: 1234
+          format: int64
+          type: integer
+      type: object
+    ParseSettings:
+      description: Echo of the request parameters
+      example:
+        locale: en_US
+        currency: PLN
+        country: PL
+        item_id: 1005004530469845
+      properties:
+        locale:
+          example: en_US
+          type: string
+        currency:
+          example: PLN
+          type: string
+        country:
+          example: PL
+          type: string
+        item_id:
+          example: 1005004530469845
+          format: int64
+          type: integer
+      type: object
+    Product:
+      description: Parsed AliExpress product data
+      example:
+        id: 1005006133180174
+        item_id_prefix: item_id_prefix
+        title: title
+        img_url: img_url
+        img_list:
+        - img_list
+        - img_list
+        video:
+          id: 0
+          url: url
+          thumbnail: thumbnail
+        price:
+          sku_id: sku_id
+          sku_id_int: 6
+          bulk_value: 1.4658129805029452
+          bulk_order: 5
+          min_value: 12.77
+          max_value: 18.5
+          original_min_value: 5.637376656633329
+          original_max_value: 2.3021358869347655
+          currency: PLN
+          country: PL
+        configurations:
+        - id: 7
+          product_id: 9
+          sku_id: sku_id
+          sku_attribute: sku_attribute
+          properties:
+          - id: id
+            name: name
+            value: value
+            image: image
+          - id: id
+            name: name
+            value: value
+            image: image
+          image: image
+          price:
+            value: 3.616076749251911
+            original_value: 2.027123023002322
+            currency: currency
+            country: country
+        - id: 7
+          product_id: 9
+          sku_id: sku_id
+          sku_attribute: sku_attribute
+          properties:
+          - id: id
+            name: name
+            value: value
+            image: image
+          - id: id
+            name: name
+            value: value
+            image: image
+          image: image
+          price:
+            value: 3.616076749251911
+            original_value: 2.027123023002322
+            currency: currency
+            country: country
+        ratings: 4.7
+        review_amount: 188
+        seller:
+          seller_admin_seq: 4
+          store_num: 7
+          store_name: store_name
+          store_url: store_url
+          positive_rate: 97.5%
+          score: 1
+        specs:
+          key: specs
+        default_shipping:
+          service_code: service_code
+          value: 1.0246457001441578
+          currency: currency
+          company: company
+          min_days: 1
+          max_days: 6
+          shipping_from: shipping_from
+          delivery_date: delivery_date
+          guaranteed_delivery_time: 7
+          free_shipping: true
+          tracking: true
+        shipping_methods:
+        - service_code: service_code
+          value: 1.0246457001441578
+          currency: currency
+          company: company
+          min_days: 1
+          max_days: 6
+          shipping_from: shipping_from
+          delivery_date: delivery_date
+          guaranteed_delivery_time: 7
+          free_shipping: true
+          tracking: true
+        - service_code: service_code
+          value: 1.0246457001441578
+          currency: currency
+          company: company
+          min_days: 1
+          max_days: 6
+          shipping_from: shipping_from
+          delivery_date: delivery_date
+          guaranteed_delivery_time: 7
+          free_shipping: true
+          tracking: true
+        category_path: category_path
+        category_name: category_name
+        breadcrumbs:
+        - breadcrumbs
+        - breadcrumbs
+        sales: 1200
+        avail_quantity: 976
+        in_stock: true
+        can_ship: true
+        is_not_found: true
+        has_welcome_discount: true
+        has_one_time_discount: true
+        description: ""
+        created_at: 2000-01-23T04:56:07.000+00:00
+        updated_at: 2000-01-23T04:56:07.000+00:00
+      properties:
+        id:
+          example: 1005006133180174
+          format: int64
+          type: integer
+        item_id_prefix:
+          type: string
+        title:
+          type: string
+        img_url:
+          type: string
+        img_list:
+          items:
+            type: string
+          type: array
+        video:
+          $ref: "#/components/schemas/ProductVideo"
+        price:
+          $ref: "#/components/schemas/Price"
+        configurations:
+          items:
+            $ref: "#/components/schemas/ProductConfiguration"
+          type: array
+        ratings:
+          example: 4.7
+          format: double
+          type: number
+        review_amount:
+          example: 188
+          type: integer
+        seller:
+          $ref: "#/components/schemas/ProductSeller"
+        specs:
+          additionalProperties:
+            type: string
+          description: "Free-form key/value product attributes (brand, model, sku,\
+            \ upc, etc.)"
+          type: object
+        default_shipping:
+          $ref: "#/components/schemas/ShippingMethod"
+        shipping_methods:
+          items:
+            $ref: "#/components/schemas/ShippingMethod"
+          type: array
+        category_path:
+          type: string
+        category_name:
+          type: string
+        breadcrumbs:
+          items:
+            type: string
+          type: array
+        sales:
+          description: Total units sold
+          example: 1200
+          type: integer
+        avail_quantity:
+          description: Total available stock across all configurations
+          example: 976
+          type: integer
+        in_stock:
+          type: boolean
+        can_ship:
+          description: True when the product can be shipped to the requested country
+          type: boolean
+        is_not_found:
+          type: boolean
+        has_welcome_discount:
+          type: boolean
+        has_one_time_discount:
+          type: boolean
+        description:
+          allOf:
+          - $ref: "#/components/schemas/ProductDescription"
+          description: |
+            Long-form product description. Present only when with_description=true was requested (and the fetch succeeded).
+        created_at:
+          format: date-time
+          type: string
+        updated_at:
+          format: date-time
+          type: string
+      type: object
+    ProductDescription:
+      description: |
+        Long-form product description. Returned only when with_description=true. Fetching it adds an extra request (~600-750 ms).
+      properties:
+        html:
+          description: Sanitized description HTML (scripts and event-handler attributes
+            removed; safe to render).
+          example: <h2><strong>About this item:</strong></h2><h2>1. 40 Gbps 2000 MHz
+            High Speed...</h2>
+          type: string
+        text:
+          description: Plain-text version of the description (tags stripped).
+          example: "About this item: 1. 40 Gbps 2000 MHz High Speed: The Cat 8 ethernet\
+            \ cable..."
+          type: string
+        images:
+          description: Image URLs extracted from the description gallery.
+          example:
+          - https://ae01.alicdn.com/kf/Sf4908e5557c248e59446e4791b7ae7791.jpg
+          - https://ae01.alicdn.com/kf/S60ddba7c6904492390d01f94283da4ffq.jpg
+          items:
+            type: string
+          type: array
+      type: object
+    Price:
+      description: Price data for the product scoped to the requested country and
+        currency
+      example:
+        sku_id: sku_id
+        sku_id_int: 6
+        bulk_value: 1.4658129805029452
+        bulk_order: 5
+        min_value: 12.77
+        max_value: 18.5
+        original_min_value: 5.637376656633329
+        original_max_value: 2.3021358869347655
+        currency: PLN
+        country: PL
+      properties:
+        sku_id:
+          description: SKU identifier string
+          type: string
+        sku_id_int:
+          description: SKU identifier as integer
+          format: int64
+          type: integer
+        bulk_value:
+          description: Price per unit when buying in bulk
+          format: double
+          type: number
+        bulk_order:
+          description: Minimum quantity for bulk pricing
+          format: int64
+          type: integer
+        min_value:
+          description: Minimum price (lowest SKU variant)
+          example: 12.77
+          format: double
+          type: number
+        max_value:
+          description: Maximum price (highest SKU variant)
+          example: 18.5
+          format: double
+          type: number
+        original_min_value:
+          description: Original (pre-discount) minimum price
+          format: double
+          type: number
+        original_max_value:
+          description: Original (pre-discount) maximum price
+          format: double
+          type: number
+        currency:
+          example: PLN
+          type: string
+        country:
+          example: PL
+          type: string
+      type: object
+    ProductConfiguration:
+      description: A single SKU variant (e.g. a specific color/size combination)
+      example:
+        id: 7
+        product_id: 9
+        sku_id: sku_id
+        sku_attribute: sku_attribute
+        properties:
+        - id: id
+          name: name
+          value: value
+          image: image
+        - id: id
+          name: name
+          value: value
+          image: image
+        image: image
+        price:
+          value: 3.616076749251911
+          original_value: 2.027123023002322
+          currency: currency
+          country: country
+      properties:
+        id:
+          format: int64
+          type: integer
+        product_id:
+          format: int64
+          type: integer
+        sku_id:
+          type: string
+        sku_attribute:
+          type: string
+        properties:
+          items:
+            $ref: "#/components/schemas/ConfigurationProperty"
+          type: array
+        image:
+          type: string
+        price:
+          $ref: "#/components/schemas/ConfigurationPrice"
+      type: object
+    ConfigurationProperty:
+      description: "A single attribute of a SKU variant (e.g. Color: Red)"
+      example:
+        id: id
+        name: name
+        value: value
+        image: image
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        value:
+          type: string
+        image:
+          type: string
+      type: object
+    ConfigurationPrice:
+      description: Price for a specific SKU variant
+      example:
+        value: 3.616076749251911
+        original_value: 2.027123023002322
+        currency: currency
+        country: country
+      properties:
+        value:
+          format: double
+          type: number
+        original_value:
+          format: double
+          type: number
+        currency:
+          type: string
+        country:
+          type: string
+      type: object
+    ProductSeller:
+      example:
+        seller_admin_seq: 4
+        store_num: 7
+        store_name: store_name
+        store_url: store_url
+        positive_rate: 97.5%
+        score: 1
+      properties:
+        seller_admin_seq:
+          type: integer
+        store_num:
+          type: integer
+        store_name:
+          type: string
+        store_url:
+          type: string
+        positive_rate:
+          description: Seller positive feedback percentage
+          example: 97.5%
+          type: string
+        score:
+          type: integer
+      type: object
+    ProductVideo:
+      example:
+        id: 0
+        url: url
+        thumbnail: thumbnail
+      properties:
+        id:
+          format: int64
+          type: integer
+        url:
+          type: string
+        thumbnail:
+          type: string
+      type: object
+    StoreCategory:
+      example:
+        name: name
+        group_id: group_id
+        url: url
+        sub_categories:
+        - null
+        - null
+      properties:
+        name:
+          description: Category display name
+          type: string
+        group_id:
+          description: AliExpress category group identifier
+          type: string
+        url:
+          description: Direct URL to this category page
+          type: string
+        sub_categories:
+          description: Nested sub-categories (omitted if none)
+          items:
+            $ref: "#/components/schemas/StoreCategory"
+          type: array
+      type: object
+    ShippingMethod:
+      example:
+        service_code: service_code
+        value: 1.0246457001441578
+        currency: currency
+        company: company
+        min_days: 1
+        max_days: 6
+        shipping_from: shipping_from
+        delivery_date: delivery_date
+        guaranteed_delivery_time: 7
+        free_shipping: true
+        tracking: true
+      properties:
+        service_code:
+          type: string
+        value:
+          description: Shipping cost (0 for free shipping)
+          format: double
+          type: number
+        currency:
+          type: string
+        company:
+          description: Carrier name
+          type: string
+        min_days:
+          type: integer
+        max_days:
+          type: integer
+        shipping_from:
+          description: Origin country code
+          type: string
+        delivery_date:
+          type: string
+        guaranteed_delivery_time:
+          type: integer
+        free_shipping:
+          type: boolean
+        tracking:
+          type: boolean
+      type: object
+    SellerParseResponse:
+      description: Top-level response envelope returned by the gateway for seller
+        requests
+      example:
+        meta:
+          code: 200
+          v: v2_glo
+          request_time: 2026-06-08 12:00:00
+          execution_time: 0.45s
+        settings:
+          seller_id: 0
+          store_num: 301635
+        item:
+          id: 0
+          store_num: 6
+          store_name: store_name
+          country: CN
+          store_logo: store_logo
+          store_rating: 4.8
+          since_from: 2000-01-23T04:56:07.000+00:00
+          positive_feedback: 1
+          neutral_feedback: 5
+          negative_feedback: 5
+          communication: 2.3021358869347655
+          shipping_speed: 7.061401241503109
+          described: 9.301444243932576
+          positive_reviews: 3.616076749251911
+          followers: 2.027123023002322
+          six_month_sales: 4.145608029883936
+          regular_buyers: 7.386281948385884
+          store_age: 1.2315135367772556
+          is_on_sale: true
+          sale_starts_at: 2000-01-23T04:56:07.000+00:00
+          sale_ends_at: 2000-01-23T04:56:07.000+00:00
+          business_license_url: business_license_url
+          store_categories:
+          - name: name
+            group_id: group_id
+            url: url
+            sub_categories:
+            - null
+            - null
+          - name: name
+            group_id: group_id
+            url: url
+            sub_categories:
+            - null
+            - null
+          spider: v2_glo
+          updated_at: 2000-01-23T04:56:07.000+00:00
+      properties:
+        meta:
+          $ref: "#/components/schemas/SellerMeta"
+        settings:
+          $ref: "#/components/schemas/SellerSettings"
+        item:
+          $ref: "#/components/schemas/SellerItem"
+      type: object
+    SellerMeta:
+      description: Request metadata set by the seller parser
+      example:
+        code: 200
+        v: v2_glo
+        request_time: 2026-06-08 12:00:00
+        execution_time: 0.45s
+      properties:
+        code:
+          example: 200
+          type: integer
+        v:
+          description: Parser spider version
+          example: v2_glo
+          type: string
+        request_time:
+          description: UTC timestamp when the request was received
+          example: 2026-06-08 12:00:00
+          type: string
+        execution_time:
+          description: Total parse duration
+          example: 0.45s
+          type: string
+      type: object
+    SellerSettings:
+      description: Echo of the request parameters
+      example:
+        seller_id: 0
+        store_num: 301635
+      properties:
+        seller_id:
+          example: 0
+          type: integer
+        store_num:
+          example: 301635
+          type: integer
+      type: object
+    SellerItem:
+      description: Parsed AliExpress seller/store data
+      example:
+        id: 0
+        store_num: 6
+        store_name: store_name
+        country: CN
+        store_logo: store_logo
+        store_rating: 4.8
+        since_from: 2000-01-23T04:56:07.000+00:00
+        positive_feedback: 1
+        neutral_feedback: 5
+        negative_feedback: 5
+        communication: 2.3021358869347655
+        shipping_speed: 7.061401241503109
+        described: 9.301444243932576
+        positive_reviews: 3.616076749251911
+        followers: 2.027123023002322
+        six_month_sales: 4.145608029883936
+        regular_buyers: 7.386281948385884
+        store_age: 1.2315135367772556
+        is_on_sale: true
+        sale_starts_at: 2000-01-23T04:56:07.000+00:00
+        sale_ends_at: 2000-01-23T04:56:07.000+00:00
+        business_license_url: business_license_url
+        store_categories:
+        - name: name
+          group_id: group_id
+          url: url
+          sub_categories:
+          - null
+          - null
+        - name: name
+          group_id: group_id
+          url: url
+          sub_categories:
+          - null
+          - null
+        spider: v2_glo
+        updated_at: 2000-01-23T04:56:07.000+00:00
+      properties:
+        id:
+          type: integer
+        store_num:
+          type: integer
+        store_name:
+          type: string
+        country:
+          description: Seller country code
+          example: CN
+          type: string
+        store_logo:
+          description: URL of the store logo image
+          type: string
+        store_rating:
+          description: Overall store rating score (0–5)
+          example: 4.8
+          format: double
+          type: number
+        since_from:
+          description: Date the store was established
+          format: date-time
+          type: string
+        positive_feedback:
+          description: Count of positive feedback received
+          type: integer
+        neutral_feedback:
+          description: Count of neutral feedback received
+          type: integer
+        negative_feedback:
+          description: Count of negative feedback received
+          type: integer
+        communication:
+          description: Communication score (0–5)
+          format: double
+          type: number
+        shipping_speed:
+          description: Shipping speed score (0–5)
+          format: double
+          type: number
+        described:
+          description: Item as described score (0–5)
+          format: double
+          type: number
+        positive_reviews:
+          description: Positive review percentage (0–100)
+          format: double
+          type: number
+        followers:
+          description: Number of store followers
+          format: double
+          type: number
+        six_month_sales:
+          description: Units sold in the last 6 months
+          format: double
+          type: number
+        regular_buyers:
+          description: Number of repeat buyers
+          format: double
+          type: number
+        store_age:
+          description: Store age in years
+          format: double
+          type: number
+        is_on_sale:
+          description: True when the store is currently running a sale campaign
+          type: boolean
+        sale_starts_at:
+          description: UTC timestamp when the current sale starts (omitted if not
+            in sale)
+          format: date-time
+          nullable: true
+          type: string
+        sale_ends_at:
+          description: UTC timestamp when the current sale ends (omitted if not in
+            sale)
+          format: date-time
+          nullable: true
+          type: string
+        business_license_url:
+          description: Link to the seller's AliExpress business license verification
+            page
+          type: string
+        store_categories:
+          description: Store's custom product category tree
+          items:
+            $ref: "#/components/schemas/StoreCategory"
+          type: array
+        spider:
+          description: Parser version used
+          example: v2_glo
+          type: string
+        updated_at:
+          format: date-time
+          type: string
+      type: object
+    CouponsParseResponse:
+      description: Top-level response envelope returned by the gateway for coupon
+        requests
+      example:
+        meta:
+          code: 200
+          v: v1_glo
+          request_time: 2026-06-11 12:00:00
+          execution_time: 1.20s
+        settings:
+          seller_id: 0
+          store_num: 301635
+          country: US
+          currency: USD
+        items:
+        - code: 0ERJ3W
+          discount: 1
+          orders_over: 1.01
+          expired: 2026-06-30T23:59:59Z
+          member_level: A0
+          country_list:
+          - country_list
+          - country_list
+          is_limited_products: true
+          total: 19999
+          consumed: 1711
+          is_active: true
+          spider: coupon_v1_glo-v1.0.0
+          updated_at: 2000-01-23T04:56:07.000+00:00
+        - code: 0ERJ3W
+          discount: 1
+          orders_over: 1.01
+          expired: 2026-06-30T23:59:59Z
+          member_level: A0
+          country_list:
+          - country_list
+          - country_list
+          is_limited_products: true
+          total: 19999
+          consumed: 1711
+          is_active: true
+          spider: coupon_v1_glo-v1.0.0
+          updated_at: 2000-01-23T04:56:07.000+00:00
+      properties:
+        meta:
+          $ref: "#/components/schemas/CouponMeta"
+        settings:
+          $ref: "#/components/schemas/CouponSettings"
+        items:
+          description: Active coupons of the store (empty when the seller has none)
+          items:
+            $ref: "#/components/schemas/Coupon"
+          type: array
+      type: object
+    CouponMeta:
+      description: Request metadata set by the coupon parser
+      example:
+        code: 200
+        v: v1_glo
+        request_time: 2026-06-11 12:00:00
+        execution_time: 1.20s
+      properties:
+        code:
+          example: 200
+          type: integer
+        v:
+          description: Parser spider version
+          example: v1_glo
+          type: string
+        request_time:
+          description: UTC timestamp when the request was received
+          example: 2026-06-11 12:00:00
+          type: string
+        execution_time:
+          description: Total parse duration
+          example: 1.20s
+          type: string
+      type: object
+    CouponSettings:
+      description: Echo of the request parameters
+      example:
+        seller_id: 0
+        store_num: 301635
+        country: US
+        currency: USD
+      properties:
+        seller_id:
+          description: Seller admin seq (resolved from store_num when not provided)
+          example: 0
+          type: integer
+        store_num:
+          example: 301635
+          type: integer
+        country:
+          example: US
+          type: string
+        currency:
+          example: USD
+          type: string
+      type: object
+    Coupon:
+      description: A single active seller coupon campaign
+      example:
+        code: 0ERJ3W
+        discount: 1
+        orders_over: 1.01
+        expired: 2026-06-30T23:59:59Z
+        member_level: A0
+        country_list:
+        - country_list
+        - country_list
+        is_limited_products: true
+        total: 19999
+        consumed: 1711
+        is_active: true
+        spider: coupon_v1_glo-v1.0.0
+        updated_at: 2000-01-23T04:56:07.000+00:00
+      properties:
+        code:
+          description: Coupon code to apply at checkout
+          example: 0ERJ3W
+          type: string
+        discount:
+          description: Discount amount in the requested currency
+          example: 1
+          format: double
+          type: number
+        orders_over:
+          description: Minimum order amount required to use the coupon
+          example: 1.01
+          format: double
+          type: number
+        expired:
+          description: Coupon expiration date (UTC)
+          example: 2026-06-30T23:59:59Z
+          format: date-time
+          type: string
+        member_level:
+          description: Required store membership level (empty when unrestricted)
+          example: A0
+          type: string
+        country_list:
+          description: Countries eligible for the coupon (empty when unrestricted)
+          items:
+            type: string
+          type: array
+        is_limited_products:
+          description: |
+            True when the coupon applies only to selected products of the store (derived from the campaign range group); false when it applies storewide.
+          type: boolean
+        total:
+          description: Total coupon budget issued
+          example: 19999
+          type: integer
+        consumed:
+          description: Coupons already claimed/used
+          example: 1711
+          type: integer
+        is_active:
+          example: true
+          type: boolean
+        spider:
+          description: Parser version used
+          example: coupon_v1_glo-v1.0.0
+          type: string
+        updated_at:
+          format: date-time
+          type: string
+      type: object
+    ReviewsParseResponse:
+      description: Top-level response envelope returned by the gateway for review
+        requests
+      example:
+        meta:
+          code: 200
+          v: reviews_glo-v1.0.0
+          request_time: 2026-06-16 12:00:00
+          execution_time: 1.10s
+        settings:
+          product_id: 1005004530469845
+          country: PL
+          language: en_US
+          page: 1
+          page_size: 20
+          filter: ""
+          sort: complex_default
+        item:
+          product_id: 1005004530469845
+          reviews:
+          - review_id: 1000123456789
+            buyer:
+              name: name
+              gender: gender
+              profile_image: profile_image
+              country: country
+            anonymous: true
+            rating: 5
+            country: PL
+            upvotes: 0
+            downvotes: 6
+            date: 18 Oct 2025
+            shipping_method: shipping_method
+            variant: variant
+            labels:
+            - key: key
+              value: value
+            - key: key
+              value: value
+            images:
+            - images
+            - images
+            comment:
+              text: text
+              translated_text: translated_text
+              date: date
+            additional_comment:
+              text: text
+              translated_text: translated_text
+              date: date
+            seller_reply:
+              text: text
+              translated_text: translated_text
+              date: date
+            additional_seller_reply:
+              text: text
+              translated_text: translated_text
+              date: date
+          - review_id: 1000123456789
+            buyer:
+              name: name
+              gender: gender
+              profile_image: profile_image
+              country: country
+            anonymous: true
+            rating: 5
+            country: PL
+            upvotes: 0
+            downvotes: 6
+            date: 18 Oct 2025
+            shipping_method: shipping_method
+            variant: variant
+            labels:
+            - key: key
+              value: value
+            - key: key
+              value: value
+            images:
+            - images
+            - images
+            comment:
+              text: text
+              translated_text: translated_text
+              date: date
+            additional_comment:
+              text: text
+              translated_text: translated_text
+              date: date
+            seller_reply:
+              text: text
+              translated_text: translated_text
+              date: date
+            additional_seller_reply:
+              text: text
+              translated_text: translated_text
+              date: date
+          total_reviews: 1280
+          page: 1
+          page_size: 20
+          total_pages: 64
+          product_rating: 4.8
+          language: en_US
+          current_filter: current_filter
+          filter_stats:
+          - name: name
+            amount: 1
+          - name: name
+            amount: 1
+          rating_breakdown:
+            five_stars: 5
+            four_stars: 5
+            three_stars: 2
+            two_stars: 7
+            one_star: 9
+            total_positive: 3
+            total_negative: 2
+            total_neutral: 4
+          updated_at: 2000-01-23T04:56:07.000+00:00
+      properties:
+        meta:
+          $ref: "#/components/schemas/ReviewsMeta"
+        settings:
+          $ref: "#/components/schemas/ReviewsSettings"
+        item:
+          $ref: "#/components/schemas/ReviewsResult"
+      type: object
+    ReviewsMeta:
+      description: Request metadata set by the reviews parser
+      example:
+        code: 200
+        v: reviews_glo-v1.0.0
+        request_time: 2026-06-16 12:00:00
+        execution_time: 1.10s
+      properties:
+        code:
+          example: 200
+          type: integer
+        v:
+          description: Parser spider version
+          example: reviews_glo-v1.0.0
+          type: string
+        request_time:
+          description: UTC timestamp when the request was received
+          example: 2026-06-16 12:00:00
+          type: string
+        execution_time:
+          description: Total parse duration
+          example: 1.10s
+          type: string
+      type: object
+    ReviewsSettings:
+      description: Echo of the request parameters
+      example:
+        product_id: 1005004530469845
+        country: PL
+        language: en_US
+        page: 1
+        page_size: 20
+        filter: ""
+        sort: complex_default
+      properties:
+        product_id:
+          example: 1005004530469845
+          format: int64
+          type: integer
+        country:
+          example: PL
+          type: string
+        language:
+          example: en_US
+          type: string
+        page:
+          example: 1
+          type: integer
+        page_size:
+          example: 20
+          type: integer
+        filter:
+          example: ""
+          type: string
+        sort:
+          example: complex_default
+          type: string
+      type: object
+    ReviewsResult:
+      description: Parsed product reviews with rating breakdown and pagination
+      example:
+        product_id: 1005004530469845
+        reviews:
+        - review_id: 1000123456789
+          buyer:
+            name: name
+            gender: gender
+            profile_image: profile_image
+            country: country
+          anonymous: true
+          rating: 5
+          country: PL
+          upvotes: 0
+          downvotes: 6
+          date: 18 Oct 2025
+          shipping_method: shipping_method
+          variant: variant
+          labels:
+          - key: key
+            value: value
+          - key: key
+            value: value
+          images:
+          - images
+          - images
+          comment:
+            text: text
+            translated_text: translated_text
+            date: date
+          additional_comment:
+            text: text
+            translated_text: translated_text
+            date: date
+          seller_reply:
+            text: text
+            translated_text: translated_text
+            date: date
+          additional_seller_reply:
+            text: text
+            translated_text: translated_text
+            date: date
+        - review_id: 1000123456789
+          buyer:
+            name: name
+            gender: gender
+            profile_image: profile_image
+            country: country
+          anonymous: true
+          rating: 5
+          country: PL
+          upvotes: 0
+          downvotes: 6
+          date: 18 Oct 2025
+          shipping_method: shipping_method
+          variant: variant
+          labels:
+          - key: key
+            value: value
+          - key: key
+            value: value
+          images:
+          - images
+          - images
+          comment:
+            text: text
+            translated_text: translated_text
+            date: date
+          additional_comment:
+            text: text
+            translated_text: translated_text
+            date: date
+          seller_reply:
+            text: text
+            translated_text: translated_text
+            date: date
+          additional_seller_reply:
+            text: text
+            translated_text: translated_text
+            date: date
+        total_reviews: 1280
+        page: 1
+        page_size: 20
+        total_pages: 64
+        product_rating: 4.8
+        language: en_US
+        current_filter: current_filter
+        filter_stats:
+        - name: name
+          amount: 1
+        - name: name
+          amount: 1
+        rating_breakdown:
+          five_stars: 5
+          four_stars: 5
+          three_stars: 2
+          two_stars: 7
+          one_star: 9
+          total_positive: 3
+          total_negative: 2
+          total_neutral: 4
+        updated_at: 2000-01-23T04:56:07.000+00:00
+      properties:
+        product_id:
+          example: 1005004530469845
+          format: int64
+          type: integer
+        reviews:
+          description: Reviews on the requested page (empty when the product has none)
+          items:
+            $ref: "#/components/schemas/Review"
+          type: array
+        total_reviews:
+          description: Total number of reviews for the product
+          example: 1280
+          type: integer
+        page:
+          example: 1
+          type: integer
+        page_size:
+          example: 20
+          type: integer
+        total_pages:
+          example: 64
+          type: integer
+        product_rating:
+          description: Average product rating (0-5)
+          example: 4.8
+          format: double
+          type: number
+        language:
+          example: en_US
+          type: string
+        current_filter:
+          description: The filter applied to this result (empty when all reviews)
+          type: string
+        filter_stats:
+          items:
+            $ref: "#/components/schemas/ReviewFilterStat"
+          type: array
+        rating_breakdown:
+          $ref: "#/components/schemas/RatingBreakdown"
+        updated_at:
+          format: date-time
+          type: string
+      type: object
+    Review:
+      description: A single buyer review
+      example:
+        review_id: 1000123456789
+        buyer:
+          name: name
+          gender: gender
+          profile_image: profile_image
+          country: country
+        anonymous: true
+        rating: 5
+        country: PL
+        upvotes: 0
+        downvotes: 6
+        date: 18 Oct 2025
+        shipping_method: shipping_method
+        variant: variant
+        labels:
+        - key: key
+          value: value
+        - key: key
+          value: value
+        images:
+        - images
+        - images
+        comment:
+          text: text
+          translated_text: translated_text
+          date: date
+        additional_comment:
+          text: text
+          translated_text: translated_text
+          date: date
+        seller_reply:
+          text: text
+          translated_text: translated_text
+          date: date
+        additional_seller_reply:
+          text: text
+          translated_text: translated_text
+          date: date
+      properties:
+        review_id:
+          example: 1000123456789
+          format: int64
+          type: integer
+        buyer:
+          $ref: "#/components/schemas/ReviewBuyer"
+        anonymous:
+          type: boolean
+        rating:
+          description: Review rating on a 0-5 scale
+          example: 5
+          format: double
+          type: number
+        country:
+          description: Buyer country code
+          example: PL
+          type: string
+        upvotes:
+          description: Number of helpful votes
+          type: integer
+        downvotes:
+          description: Number of unhelpful votes
+          type: integer
+        date:
+          description: Review date as shown on AliExpress
+          example: 18 Oct 2025
+          type: string
+        shipping_method:
+          description: Logistics/shipping method used for the order
+          type: string
+        variant:
+          description: "The purchased SKU/variant (e.g. color, size)"
+          type: string
+        labels:
+          items:
+            $ref: "#/components/schemas/ReviewLabel"
+          type: array
+        images:
+          items:
+            type: string
+          type: array
+        comment:
+          $ref: "#/components/schemas/ReviewContent"
+        additional_comment:
+          $ref: "#/components/schemas/ReviewContent"
+        seller_reply:
+          $ref: "#/components/schemas/ReviewContent"
+        additional_seller_reply:
+          $ref: "#/components/schemas/ReviewContent"
+      type: object
+    ReviewBuyer:
+      description: The review author
+      example:
+        name: name
+        gender: gender
+        profile_image: profile_image
+        country: country
+      properties:
+        name:
+          type: string
+        gender:
+          type: string
+        profile_image:
+          type: string
+        country:
+          type: string
+      type: object
+    ReviewContent:
+      description: A piece of review text with an optional translation
+      example:
+        text: text
+        translated_text: translated_text
+        date: date
+      properties:
+        text:
+          description: Original text
+          type: string
+        translated_text:
+          description: Translated text (when available)
+          type: string
+        date:
+          type: string
+      type: object
+    ReviewLabel:
+      description: A structured review attribute (key/value tag)
+      example:
+        key: key
+        value: value
+      properties:
+        key:
+          type: string
+        value:
+          type: string
+      type: object
+    RatingBreakdown:
+      description: Per-star and sentiment counts for the product
+      example:
+        five_stars: 5
+        four_stars: 5
+        three_stars: 2
+        two_stars: 7
+        one_star: 9
+        total_positive: 3
+        total_negative: 2
+        total_neutral: 4
+      properties:
+        five_stars:
+          type: integer
+        four_stars:
+          type: integer
+        three_stars:
+          type: integer
+        two_stars:
+          type: integer
+        one_star:
+          type: integer
+        total_positive:
+          type: integer
+        total_negative:
+          type: integer
+        total_neutral:
+          type: integer
+      type: object
+    ReviewFilterStat:
+      description: Count of reviews available for a given filter
+      example:
+        name: name
+        amount: 1
+      properties:
+        name:
+          description: Filter code
+          type: string
+        amount:
+          type: integer
+      type: object
+    ImageSearchRequest:
+      description: Image-search request body
+      example:
+        image64: /9j/4AAQSkZJRgABAQEAYABgAAD...
+        country: US
+        currency: USD
+        locale: en_US
+        page: 1
+      properties:
+        image64:
+          description: Base64-encoded image bytes to search by.
+          example: /9j/4AAQSkZJRgABAQEAYABgAAD...
+          type: string
+        country:
+          description: Country code (ISO 3166-1 alpha-2) used for pricing and shipping
+            eligibility.
+          example: US
+          type: string
+        currency:
+          description: Currency code (ISO 4217) for the returned prices.
+          example: USD
+          type: string
+        locale:
+          default: en_US
+          description: Response language locale.
+          example: en_US
+          type: string
+        page:
+          default: 1
+          description: Page number of results to return (starts at 1).
+          example: 1
+          type: integer
+      required:
+      - country
+      - currency
+      - image64
+      type: object
+    ImageSearchParseResponse:
+      description: Top-level response envelope returned by the gateway for image-search
+        requests
+      example:
+        meta:
+          code: 200
+          v: image_search_glo-v1.0.0
+          request_time: 2026-06-17 12:00:00
+          execution_time: 2.40s
+        settings:
+          country: US
+          currency: USD
+          locale: en_US
+          page: 1
+        item:
+          products:
+          - id: 1005006133180174
+            item_id_prefix: item_id_prefix
+            title: title
+            img_url: img_url
+            img_list:
+            - img_list
+            - img_list
+            video:
+              id: 0
+              url: url
+              thumbnail: thumbnail
+            price:
+              sku_id: sku_id
+              sku_id_int: 6
+              bulk_value: 1.4658129805029452
+              bulk_order: 5
+              min_value: 12.77
+              max_value: 18.5
+              original_min_value: 5.637376656633329
+              original_max_value: 2.3021358869347655
+              currency: PLN
+              country: PL
+            configurations:
+            - id: 7
+              product_id: 9
+              sku_id: sku_id
+              sku_attribute: sku_attribute
+              properties:
+              - id: id
+                name: name
+                value: value
+                image: image
+              - id: id
+                name: name
+                value: value
+                image: image
+              image: image
+              price:
+                value: 3.616076749251911
+                original_value: 2.027123023002322
+                currency: currency
+                country: country
+            - id: 7
+              product_id: 9
+              sku_id: sku_id
+              sku_attribute: sku_attribute
+              properties:
+              - id: id
+                name: name
+                value: value
+                image: image
+              - id: id
+                name: name
+                value: value
+                image: image
+              image: image
+              price:
+                value: 3.616076749251911
+                original_value: 2.027123023002322
+                currency: currency
+                country: country
+            ratings: 4.7
+            review_amount: 188
+            seller:
+              seller_admin_seq: 4
+              store_num: 7
+              store_name: store_name
+              store_url: store_url
+              positive_rate: 97.5%
+              score: 1
+            specs:
+              key: specs
+            default_shipping:
+              service_code: service_code
+              value: 1.0246457001441578
+              currency: currency
+              company: company
+              min_days: 1
+              max_days: 6
+              shipping_from: shipping_from
+              delivery_date: delivery_date
+              guaranteed_delivery_time: 7
+              free_shipping: true
+              tracking: true
+            shipping_methods:
+            - service_code: service_code
+              value: 1.0246457001441578
+              currency: currency
+              company: company
+              min_days: 1
+              max_days: 6
+              shipping_from: shipping_from
+              delivery_date: delivery_date
+              guaranteed_delivery_time: 7
+              free_shipping: true
+              tracking: true
+            - service_code: service_code
+              value: 1.0246457001441578
+              currency: currency
+              company: company
+              min_days: 1
+              max_days: 6
+              shipping_from: shipping_from
+              delivery_date: delivery_date
+              guaranteed_delivery_time: 7
+              free_shipping: true
+              tracking: true
+            category_path: category_path
+            category_name: category_name
+            breadcrumbs:
+            - breadcrumbs
+            - breadcrumbs
+            sales: 1200
+            avail_quantity: 976
+            in_stock: true
+            can_ship: true
+            is_not_found: true
+            has_welcome_discount: true
+            has_one_time_discount: true
+            description: ""
+            created_at: 2000-01-23T04:56:07.000+00:00
+            updated_at: 2000-01-23T04:56:07.000+00:00
+          - id: 1005006133180174
+            item_id_prefix: item_id_prefix
+            title: title
+            img_url: img_url
+            img_list:
+            - img_list
+            - img_list
+            video:
+              id: 0
+              url: url
+              thumbnail: thumbnail
+            price:
+              sku_id: sku_id
+              sku_id_int: 6
+              bulk_value: 1.4658129805029452
+              bulk_order: 5
+              min_value: 12.77
+              max_value: 18.5
+              original_min_value: 5.637376656633329
+              original_max_value: 2.3021358869347655
+              currency: PLN
+              country: PL
+            configurations:
+            - id: 7
+              product_id: 9
+              sku_id: sku_id
+              sku_attribute: sku_attribute
+              properties:
+              - id: id
+                name: name
+                value: value
+                image: image
+              - id: id
+                name: name
+                value: value
+                image: image
+              image: image
+              price:
+                value: 3.616076749251911
+                original_value: 2.027123023002322
+                currency: currency
+                country: country
+            - id: 7
+              product_id: 9
+              sku_id: sku_id
+              sku_attribute: sku_attribute
+              properties:
+              - id: id
+                name: name
+                value: value
+                image: image
+              - id: id
+                name: name
+                value: value
+                image: image
+              image: image
+              price:
+                value: 3.616076749251911
+                original_value: 2.027123023002322
+                currency: currency
+                country: country
+            ratings: 4.7
+            review_amount: 188
+            seller:
+              seller_admin_seq: 4
+              store_num: 7
+              store_name: store_name
+              store_url: store_url
+              positive_rate: 97.5%
+              score: 1
+            specs:
+              key: specs
+            default_shipping:
+              service_code: service_code
+              value: 1.0246457001441578
+              currency: currency
+              company: company
+              min_days: 1
+              max_days: 6
+              shipping_from: shipping_from
+              delivery_date: delivery_date
+              guaranteed_delivery_time: 7
+              free_shipping: true
+              tracking: true
+            shipping_methods:
+            - service_code: service_code
+              value: 1.0246457001441578
+              currency: currency
+              company: company
+              min_days: 1
+              max_days: 6
+              shipping_from: shipping_from
+              delivery_date: delivery_date
+              guaranteed_delivery_time: 7
+              free_shipping: true
+              tracking: true
+            - service_code: service_code
+              value: 1.0246457001441578
+              currency: currency
+              company: company
+              min_days: 1
+              max_days: 6
+              shipping_from: shipping_from
+              delivery_date: delivery_date
+              guaranteed_delivery_time: 7
+              free_shipping: true
+              tracking: true
+            category_path: category_path
+            category_name: category_name
+            breadcrumbs:
+            - breadcrumbs
+            - breadcrumbs
+            sales: 1200
+            avail_quantity: 976
+            in_stock: true
+            can_ship: true
+            is_not_found: true
+            has_welcome_discount: true
+            has_one_time_discount: true
+            description: ""
+            created_at: 2000-01-23T04:56:07.000+00:00
+            updated_at: 2000-01-23T04:56:07.000+00:00
+          categories:
+          - id: "708032"
+            name: Docking Stations
+          - id: "708032"
+            name: Docking Stations
+          count: 60
+          total_results: 4134
+          page: 1
+          page_size: 60
+          total_pages: 69
+          has_next_page: true
+          has_previous_page: false
+          updated_at: 2026-06-18T12:00:00Z
+      properties:
+        meta:
+          $ref: "#/components/schemas/ImageSearchMeta"
+        settings:
+          $ref: "#/components/schemas/ImageSearchSettings"
+        item:
+          $ref: "#/components/schemas/SearchResult"
+      type: object
+    ImageSearchMeta:
+      description: Request metadata set by the image-search parser
+      example:
+        code: 200
+        v: image_search_glo-v1.0.0
+        request_time: 2026-06-17 12:00:00
+        execution_time: 2.40s
+      properties:
+        code:
+          example: 200
+          type: integer
+        v:
+          description: Parser spider version
+          example: image_search_glo-v1.0.0
+          type: string
+        request_time:
+          description: UTC timestamp when the request was received
+          example: 2026-06-17 12:00:00
+          type: string
+        execution_time:
+          description: Total parse duration
+          example: 2.40s
+          type: string
+      type: object
+    ImageSearchSettings:
+      description: Echo of the request parameters (the query image is not echoed)
+      example:
+        country: US
+        currency: USD
+        locale: en_US
+        page: 1
+      properties:
+        country:
+          example: US
+          type: string
+        currency:
+          example: USD
+          type: string
+        locale:
+          example: en_US
+          type: string
+        page:
+          example: 1
+          type: integer
+      type: object
+    SearchParseResponse:
+      description: Top-level response envelope returned by the gateway for keyword-search
+        requests
+      example:
+        meta:
+          code: 200
+          v: text_search_glo-v1.0.0
+          request_time: 2026-06-18 12:00:00
+          execution_time: 1.20s
+        settings:
+          query: usb bluetooth adapter
+          country: PL
+          currency: PLN
+          locale: en_US
+          page: 1
+        item:
+          products:
+          - id: 1005006133180174
+            item_id_prefix: item_id_prefix
+            title: title
+            img_url: img_url
+            img_list:
+            - img_list
+            - img_list
+            video:
+              id: 0
+              url: url
+              thumbnail: thumbnail
+            price:
+              sku_id: sku_id
+              sku_id_int: 6
+              bulk_value: 1.4658129805029452
+              bulk_order: 5
+              min_value: 12.77
+              max_value: 18.5
+              original_min_value: 5.637376656633329
+              original_max_value: 2.3021358869347655
+              currency: PLN
+              country: PL
+            configurations:
+            - id: 7
+              product_id: 9
+              sku_id: sku_id
+              sku_attribute: sku_attribute
+              properties:
+              - id: id
+                name: name
+                value: value
+                image: image
+              - id: id
+                name: name
+                value: value
+                image: image
+              image: image
+              price:
+                value: 3.616076749251911
+                original_value: 2.027123023002322
+                currency: currency
+                country: country
+            - id: 7
+              product_id: 9
+              sku_id: sku_id
+              sku_attribute: sku_attribute
+              properties:
+              - id: id
+                name: name
+                value: value
+                image: image
+              - id: id
+                name: name
+                value: value
+                image: image
+              image: image
+              price:
+                value: 3.616076749251911
+                original_value: 2.027123023002322
+                currency: currency
+                country: country
+            ratings: 4.7
+            review_amount: 188
+            seller:
+              seller_admin_seq: 4
+              store_num: 7
+              store_name: store_name
+              store_url: store_url
+              positive_rate: 97.5%
+              score: 1
+            specs:
+              key: specs
+            default_shipping:
+              service_code: service_code
+              value: 1.0246457001441578
+              currency: currency
+              company: company
+              min_days: 1
+              max_days: 6
+              shipping_from: shipping_from
+              delivery_date: delivery_date
+              guaranteed_delivery_time: 7
+              free_shipping: true
+              tracking: true
+            shipping_methods:
+            - service_code: service_code
+              value: 1.0246457001441578
+              currency: currency
+              company: company
+              min_days: 1
+              max_days: 6
+              shipping_from: shipping_from
+              delivery_date: delivery_date
+              guaranteed_delivery_time: 7
+              free_shipping: true
+              tracking: true
+            - service_code: service_code
+              value: 1.0246457001441578
+              currency: currency
+              company: company
+              min_days: 1
+              max_days: 6
+              shipping_from: shipping_from
+              delivery_date: delivery_date
+              guaranteed_delivery_time: 7
+              free_shipping: true
+              tracking: true
+            category_path: category_path
+            category_name: category_name
+            breadcrumbs:
+            - breadcrumbs
+            - breadcrumbs
+            sales: 1200
+            avail_quantity: 976
+            in_stock: true
+            can_ship: true
+            is_not_found: true
+            has_welcome_discount: true
+            has_one_time_discount: true
+            description: ""
+            created_at: 2000-01-23T04:56:07.000+00:00
+            updated_at: 2000-01-23T04:56:07.000+00:00
+          - id: 1005006133180174
+            item_id_prefix: item_id_prefix
+            title: title
+            img_url: img_url
+            img_list:
+            - img_list
+            - img_list
+            video:
+              id: 0
+              url: url
+              thumbnail: thumbnail
+            price:
+              sku_id: sku_id
+              sku_id_int: 6
+              bulk_value: 1.4658129805029452
+              bulk_order: 5
+              min_value: 12.77
+              max_value: 18.5
+              original_min_value: 5.637376656633329
+              original_max_value: 2.3021358869347655
+              currency: PLN
+              country: PL
+            configurations:
+            - id: 7
+              product_id: 9
+              sku_id: sku_id
+              sku_attribute: sku_attribute
+              properties:
+              - id: id
+                name: name
+                value: value
+                image: image
+              - id: id
+                name: name
+                value: value
+                image: image
+              image: image
+              price:
+                value: 3.616076749251911
+                original_value: 2.027123023002322
+                currency: currency
+                country: country
+            - id: 7
+              product_id: 9
+              sku_id: sku_id
+              sku_attribute: sku_attribute
+              properties:
+              - id: id
+                name: name
+                value: value
+                image: image
+              - id: id
+                name: name
+                value: value
+                image: image
+              image: image
+              price:
+                value: 3.616076749251911
+                original_value: 2.027123023002322
+                currency: currency
+                country: country
+            ratings: 4.7
+            review_amount: 188
+            seller:
+              seller_admin_seq: 4
+              store_num: 7
+              store_name: store_name
+              store_url: store_url
+              positive_rate: 97.5%
+              score: 1
+            specs:
+              key: specs
+            default_shipping:
+              service_code: service_code
+              value: 1.0246457001441578
+              currency: currency
+              company: company
+              min_days: 1
+              max_days: 6
+              shipping_from: shipping_from
+              delivery_date: delivery_date
+              guaranteed_delivery_time: 7
+              free_shipping: true
+              tracking: true
+            shipping_methods:
+            - service_code: service_code
+              value: 1.0246457001441578
+              currency: currency
+              company: company
+              min_days: 1
+              max_days: 6
+              shipping_from: shipping_from
+              delivery_date: delivery_date
+              guaranteed_delivery_time: 7
+              free_shipping: true
+              tracking: true
+            - service_code: service_code
+              value: 1.0246457001441578
+              currency: currency
+              company: company
+              min_days: 1
+              max_days: 6
+              shipping_from: shipping_from
+              delivery_date: delivery_date
+              guaranteed_delivery_time: 7
+              free_shipping: true
+              tracking: true
+            category_path: category_path
+            category_name: category_name
+            breadcrumbs:
+            - breadcrumbs
+            - breadcrumbs
+            sales: 1200
+            avail_quantity: 976
+            in_stock: true
+            can_ship: true
+            is_not_found: true
+            has_welcome_discount: true
+            has_one_time_discount: true
+            description: ""
+            created_at: 2000-01-23T04:56:07.000+00:00
+            updated_at: 2000-01-23T04:56:07.000+00:00
+          categories:
+          - id: "708032"
+            name: Docking Stations
+          - id: "708032"
+            name: Docking Stations
+          count: 60
+          total_results: 4134
+          page: 1
+          page_size: 60
+          total_pages: 69
+          has_next_page: true
+          has_previous_page: false
+          updated_at: 2026-06-18T12:00:00Z
+      properties:
+        meta:
+          $ref: "#/components/schemas/SearchMeta"
+        settings:
+          $ref: "#/components/schemas/SearchSettings"
+        item:
+          $ref: "#/components/schemas/SearchResult"
+      type: object
+    SearchMeta:
+      description: Request metadata set by the text-search parser
+      example:
+        code: 200
+        v: text_search_glo-v1.0.0
+        request_time: 2026-06-18 12:00:00
+        execution_time: 1.20s
+      properties:
+        code:
+          example: 200
+          type: integer
+        v:
+          description: Parser spider version
+          example: text_search_glo-v1.0.0
+          type: string
+        request_time:
+          description: UTC timestamp when the request was received
+          example: 2026-06-18 12:00:00
+          type: string
+        execution_time:
+          description: Total parse duration
+          example: 1.20s
+          type: string
+      type: object
+    SearchSettings:
+      description: Echo of the request parameters
+      example:
+        query: usb bluetooth adapter
+        country: PL
+        currency: PLN
+        locale: en_US
+        page: 1
+      properties:
+        query:
+          example: usb bluetooth adapter
+          type: string
+        country:
+          example: PL
+          type: string
+        currency:
+          example: PLN
+          type: string
+        locale:
+          example: en_US
+          type: string
+        page:
+          example: 1
+          type: integer
+      type: object
+    SearchResult:
+      description: Products and category facets matched by the keyword search
+      example:
+        products:
+        - id: 1005006133180174
+          item_id_prefix: item_id_prefix
+          title: title
+          img_url: img_url
+          img_list:
+          - img_list
+          - img_list
+          video:
+            id: 0
+            url: url
+            thumbnail: thumbnail
+          price:
+            sku_id: sku_id
+            sku_id_int: 6
+            bulk_value: 1.4658129805029452
+            bulk_order: 5
+            min_value: 12.77
+            max_value: 18.5
+            original_min_value: 5.637376656633329
+            original_max_value: 2.3021358869347655
+            currency: PLN
+            country: PL
+          configurations:
+          - id: 7
+            product_id: 9
+            sku_id: sku_id
+            sku_attribute: sku_attribute
+            properties:
+            - id: id
+              name: name
+              value: value
+              image: image
+            - id: id
+              name: name
+              value: value
+              image: image
+            image: image
+            price:
+              value: 3.616076749251911
+              original_value: 2.027123023002322
+              currency: currency
+              country: country
+          - id: 7
+            product_id: 9
+            sku_id: sku_id
+            sku_attribute: sku_attribute
+            properties:
+            - id: id
+              name: name
+              value: value
+              image: image
+            - id: id
+              name: name
+              value: value
+              image: image
+            image: image
+            price:
+              value: 3.616076749251911
+              original_value: 2.027123023002322
+              currency: currency
+              country: country
+          ratings: 4.7
+          review_amount: 188
+          seller:
+            seller_admin_seq: 4
+            store_num: 7
+            store_name: store_name
+            store_url: store_url
+            positive_rate: 97.5%
+            score: 1
+          specs:
+            key: specs
+          default_shipping:
+            service_code: service_code
+            value: 1.0246457001441578
+            currency: currency
+            company: company
+            min_days: 1
+            max_days: 6
+            shipping_from: shipping_from
+            delivery_date: delivery_date
+            guaranteed_delivery_time: 7
+            free_shipping: true
+            tracking: true
+          shipping_methods:
+          - service_code: service_code
+            value: 1.0246457001441578
+            currency: currency
+            company: company
+            min_days: 1
+            max_days: 6
+            shipping_from: shipping_from
+            delivery_date: delivery_date
+            guaranteed_delivery_time: 7
+            free_shipping: true
+            tracking: true
+          - service_code: service_code
+            value: 1.0246457001441578
+            currency: currency
+            company: company
+            min_days: 1
+            max_days: 6
+            shipping_from: shipping_from
+            delivery_date: delivery_date
+            guaranteed_delivery_time: 7
+            free_shipping: true
+            tracking: true
+          category_path: category_path
+          category_name: category_name
+          breadcrumbs:
+          - breadcrumbs
+          - breadcrumbs
+          sales: 1200
+          avail_quantity: 976
+          in_stock: true
+          can_ship: true
+          is_not_found: true
+          has_welcome_discount: true
+          has_one_time_discount: true
+          description: ""
+          created_at: 2000-01-23T04:56:07.000+00:00
+          updated_at: 2000-01-23T04:56:07.000+00:00
+        - id: 1005006133180174
+          item_id_prefix: item_id_prefix
+          title: title
+          img_url: img_url
+          img_list:
+          - img_list
+          - img_list
+          video:
+            id: 0
+            url: url
+            thumbnail: thumbnail
+          price:
+            sku_id: sku_id
+            sku_id_int: 6
+            bulk_value: 1.4658129805029452
+            bulk_order: 5
+            min_value: 12.77
+            max_value: 18.5
+            original_min_value: 5.637376656633329
+            original_max_value: 2.3021358869347655
+            currency: PLN
+            country: PL
+          configurations:
+          - id: 7
+            product_id: 9
+            sku_id: sku_id
+            sku_attribute: sku_attribute
+            properties:
+            - id: id
+              name: name
+              value: value
+              image: image
+            - id: id
+              name: name
+              value: value
+              image: image
+            image: image
+            price:
+              value: 3.616076749251911
+              original_value: 2.027123023002322
+              currency: currency
+              country: country
+          - id: 7
+            product_id: 9
+            sku_id: sku_id
+            sku_attribute: sku_attribute
+            properties:
+            - id: id
+              name: name
+              value: value
+              image: image
+            - id: id
+              name: name
+              value: value
+              image: image
+            image: image
+            price:
+              value: 3.616076749251911
+              original_value: 2.027123023002322
+              currency: currency
+              country: country
+          ratings: 4.7
+          review_amount: 188
+          seller:
+            seller_admin_seq: 4
+            store_num: 7
+            store_name: store_name
+            store_url: store_url
+            positive_rate: 97.5%
+            score: 1
+          specs:
+            key: specs
+          default_shipping:
+            service_code: service_code
+            value: 1.0246457001441578
+            currency: currency
+            company: company
+            min_days: 1
+            max_days: 6
+            shipping_from: shipping_from
+            delivery_date: delivery_date
+            guaranteed_delivery_time: 7
+            free_shipping: true
+            tracking: true
+          shipping_methods:
+          - service_code: service_code
+            value: 1.0246457001441578
+            currency: currency
+            company: company
+            min_days: 1
+            max_days: 6
+            shipping_from: shipping_from
+            delivery_date: delivery_date
+            guaranteed_delivery_time: 7
+            free_shipping: true
+            tracking: true
+          - service_code: service_code
+            value: 1.0246457001441578
+            currency: currency
+            company: company
+            min_days: 1
+            max_days: 6
+            shipping_from: shipping_from
+            delivery_date: delivery_date
+            guaranteed_delivery_time: 7
+            free_shipping: true
+            tracking: true
+          category_path: category_path
+          category_name: category_name
+          breadcrumbs:
+          - breadcrumbs
+          - breadcrumbs
+          sales: 1200
+          avail_quantity: 976
+          in_stock: true
+          can_ship: true
+          is_not_found: true
+          has_welcome_discount: true
+          has_one_time_discount: true
+          description: ""
+          created_at: 2000-01-23T04:56:07.000+00:00
+          updated_at: 2000-01-23T04:56:07.000+00:00
+        categories:
+        - id: "708032"
+          name: Docking Stations
+        - id: "708032"
+          name: Docking Stations
+        count: 60
+        total_results: 4134
+        page: 1
+        page_size: 60
+        total_pages: 69
+        has_next_page: true
+        has_previous_page: false
+        updated_at: 2026-06-18T12:00:00Z
+      properties:
+        products:
+          description: |
+            Matched products (empty when there are no matches). Each item uses the same shape as the Get Product Info response, but only the card-level fields available on the search results page are populated (id, title, img_url, price, ratings, sales); the remaining fields are omitted or left at their zero value.
+          items:
+            $ref: "#/components/schemas/Product"
+          type: array
+        categories:
+          description: Product category facets offered for the query
+          items:
+            $ref: "#/components/schemas/SearchCategory"
+          type: array
+        count:
+          description: Number of products returned on this page
+          example: 60
+          type: integer
+        total_results:
+          description: Total number of products available for the query across all
+            pages
+          example: 4134
+          type: integer
+        page:
+          example: 1
+          type: integer
+        page_size:
+          example: 60
+          type: integer
+        total_pages:
+          description: Total number of pages (ceil(total_results / page_size))
+          example: 69
+          type: integer
+        has_next_page:
+          description: |
+            Whether a next page can be fetched. Uses AliExpress' own last-page signal (it caps how deep results can actually be retrieved, so this may be false even when page < total_pages). Always false when this page returned no products.
+          example: true
+          type: boolean
+        has_previous_page:
+          description: Whether a previous page exists (page > 1)
+          example: false
+          type: boolean
+        updated_at:
+          example: 2026-06-18T12:00:00Z
+          format: date-time
+          type: string
+      type: object
+    SearchCategory:
+      description: A product category facet offered for the search query
+      example:
+        id: "708032"
+        name: Docking Stations
+      properties:
+        id:
+          example: "708032"
+          type: string
+        name:
+          example: Docking Stations
+          type: string
+      type: object
+    SellerProductsParseResponse:
+      description: Top-level response envelope returned by the gateway for seller-catalog
+        requests
+      example:
+        meta:
+          code: 200
+          v: seller_products_glo-v1.0.0
+          request_time: 2026-06-18 12:00:00
+          execution_time: 1.20s
+        settings:
+          seller_id: 0
+          store_num: 301635
+          country: PL
+          currency: PLN
+          page: 1
+        item:
+          products:
+          - id: 1005006133180174
+            item_id_prefix: item_id_prefix
+            title: title
+            img_url: img_url
+            img_list:
+            - img_list
+            - img_list
+            video:
+              id: 0
+              url: url
+              thumbnail: thumbnail
+            price:
+              sku_id: sku_id
+              sku_id_int: 6
+              bulk_value: 1.4658129805029452
+              bulk_order: 5
+              min_value: 12.77
+              max_value: 18.5
+              original_min_value: 5.637376656633329
+              original_max_value: 2.3021358869347655
+              currency: PLN
+              country: PL
+            configurations:
+            - id: 7
+              product_id: 9
+              sku_id: sku_id
+              sku_attribute: sku_attribute
+              properties:
+              - id: id
+                name: name
+                value: value
+                image: image
+              - id: id
+                name: name
+                value: value
+                image: image
+              image: image
+              price:
+                value: 3.616076749251911
+                original_value: 2.027123023002322
+                currency: currency
+                country: country
+            - id: 7
+              product_id: 9
+              sku_id: sku_id
+              sku_attribute: sku_attribute
+              properties:
+              - id: id
+                name: name
+                value: value
+                image: image
+              - id: id
+                name: name
+                value: value
+                image: image
+              image: image
+              price:
+                value: 3.616076749251911
+                original_value: 2.027123023002322
+                currency: currency
+                country: country
+            ratings: 4.7
+            review_amount: 188
+            seller:
+              seller_admin_seq: 4
+              store_num: 7
+              store_name: store_name
+              store_url: store_url
+              positive_rate: 97.5%
+              score: 1
+            specs:
+              key: specs
+            default_shipping:
+              service_code: service_code
+              value: 1.0246457001441578
+              currency: currency
+              company: company
+              min_days: 1
+              max_days: 6
+              shipping_from: shipping_from
+              delivery_date: delivery_date
+              guaranteed_delivery_time: 7
+              free_shipping: true
+              tracking: true
+            shipping_methods:
+            - service_code: service_code
+              value: 1.0246457001441578
+              currency: currency
+              company: company
+              min_days: 1
+              max_days: 6
+              shipping_from: shipping_from
+              delivery_date: delivery_date
+              guaranteed_delivery_time: 7
+              free_shipping: true
+              tracking: true
+            - service_code: service_code
+              value: 1.0246457001441578
+              currency: currency
+              company: company
+              min_days: 1
+              max_days: 6
+              shipping_from: shipping_from
+              delivery_date: delivery_date
+              guaranteed_delivery_time: 7
+              free_shipping: true
+              tracking: true
+            category_path: category_path
+            category_name: category_name
+            breadcrumbs:
+            - breadcrumbs
+            - breadcrumbs
+            sales: 1200
+            avail_quantity: 976
+            in_stock: true
+            can_ship: true
+            is_not_found: true
+            has_welcome_discount: true
+            has_one_time_discount: true
+            description: ""
+            created_at: 2000-01-23T04:56:07.000+00:00
+            updated_at: 2000-01-23T04:56:07.000+00:00
+          - id: 1005006133180174
+            item_id_prefix: item_id_prefix
+            title: title
+            img_url: img_url
+            img_list:
+            - img_list
+            - img_list
+            video:
+              id: 0
+              url: url
+              thumbnail: thumbnail
+            price:
+              sku_id: sku_id
+              sku_id_int: 6
+              bulk_value: 1.4658129805029452
+              bulk_order: 5
+              min_value: 12.77
+              max_value: 18.5
+              original_min_value: 5.637376656633329
+              original_max_value: 2.3021358869347655
+              currency: PLN
+              country: PL
+            configurations:
+            - id: 7
+              product_id: 9
+              sku_id: sku_id
+              sku_attribute: sku_attribute
+              properties:
+              - id: id
+                name: name
+                value: value
+                image: image
+              - id: id
+                name: name
+                value: value
+                image: image
+              image: image
+              price:
+                value: 3.616076749251911
+                original_value: 2.027123023002322
+                currency: currency
+                country: country
+            - id: 7
+              product_id: 9
+              sku_id: sku_id
+              sku_attribute: sku_attribute
+              properties:
+              - id: id
+                name: name
+                value: value
+                image: image
+              - id: id
+                name: name
+                value: value
+                image: image
+              image: image
+              price:
+                value: 3.616076749251911
+                original_value: 2.027123023002322
+                currency: currency
+                country: country
+            ratings: 4.7
+            review_amount: 188
+            seller:
+              seller_admin_seq: 4
+              store_num: 7
+              store_name: store_name
+              store_url: store_url
+              positive_rate: 97.5%
+              score: 1
+            specs:
+              key: specs
+            default_shipping:
+              service_code: service_code
+              value: 1.0246457001441578
+              currency: currency
+              company: company
+              min_days: 1
+              max_days: 6
+              shipping_from: shipping_from
+              delivery_date: delivery_date
+              guaranteed_delivery_time: 7
+              free_shipping: true
+              tracking: true
+            shipping_methods:
+            - service_code: service_code
+              value: 1.0246457001441578
+              currency: currency
+              company: company
+              min_days: 1
+              max_days: 6
+              shipping_from: shipping_from
+              delivery_date: delivery_date
+              guaranteed_delivery_time: 7
+              free_shipping: true
+              tracking: true
+            - service_code: service_code
+              value: 1.0246457001441578
+              currency: currency
+              company: company
+              min_days: 1
+              max_days: 6
+              shipping_from: shipping_from
+              delivery_date: delivery_date
+              guaranteed_delivery_time: 7
+              free_shipping: true
+              tracking: true
+            category_path: category_path
+            category_name: category_name
+            breadcrumbs:
+            - breadcrumbs
+            - breadcrumbs
+            sales: 1200
+            avail_quantity: 976
+            in_stock: true
+            can_ship: true
+            is_not_found: true
+            has_welcome_discount: true
+            has_one_time_discount: true
+            description: ""
+            created_at: 2000-01-23T04:56:07.000+00:00
+            updated_at: 2000-01-23T04:56:07.000+00:00
+          count: 40
+          total_results: 1280
+          page: 1
+          page_size: 40
+          total_pages: 32
+          has_next_page: true
+          has_previous_page: false
+          updated_at: 2026-06-18T12:00:00Z
+      properties:
+        meta:
+          $ref: "#/components/schemas/SellerProductsMeta"
+        settings:
+          $ref: "#/components/schemas/SellerProductsSettings"
+        item:
+          $ref: "#/components/schemas/SellerProductsResult"
+      type: object
+    SellerProductsMeta:
+      description: Request metadata set by the seller-products parser
+      example:
+        code: 200
+        v: seller_products_glo-v1.0.0
+        request_time: 2026-06-18 12:00:00
+        execution_time: 1.20s
+      properties:
+        code:
+          example: 200
+          type: integer
+        v:
+          description: Parser spider version
+          example: seller_products_glo-v1.0.0
+          type: string
+        request_time:
+          description: UTC timestamp when the request was received
+          example: 2026-06-18 12:00:00
+          type: string
+        execution_time:
+          description: Total parse duration
+          example: 1.20s
+          type: string
+      type: object
+    SellerProductsSettings:
+      description: Echo of the request parameters
+      example:
+        seller_id: 0
+        store_num: 301635
+        country: PL
+        currency: PLN
+        page: 1
+      properties:
+        seller_id:
+          description: "Seller (admin seq) ID, resolved from the store number when\
+            \ not provided"
+          example: 0
+          type: integer
+        store_num:
+          example: 301635
+          type: integer
+        country:
+          example: PL
+          type: string
+        currency:
+          example: PLN
+          type: string
+        page:
+          example: 1
+          type: integer
+      type: object
+    SellerProductsResult:
+      description: A page of the seller's product catalog (best-selling first)
+      example:
+        products:
+        - id: 1005006133180174
+          item_id_prefix: item_id_prefix
+          title: title
+          img_url: img_url
+          img_list:
+          - img_list
+          - img_list
+          video:
+            id: 0
+            url: url
+            thumbnail: thumbnail
+          price:
+            sku_id: sku_id
+            sku_id_int: 6
+            bulk_value: 1.4658129805029452
+            bulk_order: 5
+            min_value: 12.77
+            max_value: 18.5
+            original_min_value: 5.637376656633329
+            original_max_value: 2.3021358869347655
+            currency: PLN
+            country: PL
+          configurations:
+          - id: 7
+            product_id: 9
+            sku_id: sku_id
+            sku_attribute: sku_attribute
+            properties:
+            - id: id
+              name: name
+              value: value
+              image: image
+            - id: id
+              name: name
+              value: value
+              image: image
+            image: image
+            price:
+              value: 3.616076749251911
+              original_value: 2.027123023002322
+              currency: currency
+              country: country
+          - id: 7
+            product_id: 9
+            sku_id: sku_id
+            sku_attribute: sku_attribute
+            properties:
+            - id: id
+              name: name
+              value: value
+              image: image
+            - id: id
+              name: name
+              value: value
+              image: image
+            image: image
+            price:
+              value: 3.616076749251911
+              original_value: 2.027123023002322
+              currency: currency
+              country: country
+          ratings: 4.7
+          review_amount: 188
+          seller:
+            seller_admin_seq: 4
+            store_num: 7
+            store_name: store_name
+            store_url: store_url
+            positive_rate: 97.5%
+            score: 1
+          specs:
+            key: specs
+          default_shipping:
+            service_code: service_code
+            value: 1.0246457001441578
+            currency: currency
+            company: company
+            min_days: 1
+            max_days: 6
+            shipping_from: shipping_from
+            delivery_date: delivery_date
+            guaranteed_delivery_time: 7
+            free_shipping: true
+            tracking: true
+          shipping_methods:
+          - service_code: service_code
+            value: 1.0246457001441578
+            currency: currency
+            company: company
+            min_days: 1
+            max_days: 6
+            shipping_from: shipping_from
+            delivery_date: delivery_date
+            guaranteed_delivery_time: 7
+            free_shipping: true
+            tracking: true
+          - service_code: service_code
+            value: 1.0246457001441578
+            currency: currency
+            company: company
+            min_days: 1
+            max_days: 6
+            shipping_from: shipping_from
+            delivery_date: delivery_date
+            guaranteed_delivery_time: 7
+            free_shipping: true
+            tracking: true
+          category_path: category_path
+          category_name: category_name
+          breadcrumbs:
+          - breadcrumbs
+          - breadcrumbs
+          sales: 1200
+          avail_quantity: 976
+          in_stock: true
+          can_ship: true
+          is_not_found: true
+          has_welcome_discount: true
+          has_one_time_discount: true
+          description: ""
+          created_at: 2000-01-23T04:56:07.000+00:00
+          updated_at: 2000-01-23T04:56:07.000+00:00
+        - id: 1005006133180174
+          item_id_prefix: item_id_prefix
+          title: title
+          img_url: img_url
+          img_list:
+          - img_list
+          - img_list
+          video:
+            id: 0
+            url: url
+            thumbnail: thumbnail
+          price:
+            sku_id: sku_id
+            sku_id_int: 6
+            bulk_value: 1.4658129805029452
+            bulk_order: 5
+            min_value: 12.77
+            max_value: 18.5
+            original_min_value: 5.637376656633329
+            original_max_value: 2.3021358869347655
+            currency: PLN
+            country: PL
+          configurations:
+          - id: 7
+            product_id: 9
+            sku_id: sku_id
+            sku_attribute: sku_attribute
+            properties:
+            - id: id
+              name: name
+              value: value
+              image: image
+            - id: id
+              name: name
+              value: value
+              image: image
+            image: image
+            price:
+              value: 3.616076749251911
+              original_value: 2.027123023002322
+              currency: currency
+              country: country
+          - id: 7
+            product_id: 9
+            sku_id: sku_id
+            sku_attribute: sku_attribute
+            properties:
+            - id: id
+              name: name
+              value: value
+              image: image
+            - id: id
+              name: name
+              value: value
+              image: image
+            image: image
+            price:
+              value: 3.616076749251911
+              original_value: 2.027123023002322
+              currency: currency
+              country: country
+          ratings: 4.7
+          review_amount: 188
+          seller:
+            seller_admin_seq: 4
+            store_num: 7
+            store_name: store_name
+            store_url: store_url
+            positive_rate: 97.5%
+            score: 1
+          specs:
+            key: specs
+          default_shipping:
+            service_code: service_code
+            value: 1.0246457001441578
+            currency: currency
+            company: company
+            min_days: 1
+            max_days: 6
+            shipping_from: shipping_from
+            delivery_date: delivery_date
+            guaranteed_delivery_time: 7
+            free_shipping: true
+            tracking: true
+          shipping_methods:
+          - service_code: service_code
+            value: 1.0246457001441578
+            currency: currency
+            company: company
+            min_days: 1
+            max_days: 6
+            shipping_from: shipping_from
+            delivery_date: delivery_date
+            guaranteed_delivery_time: 7
+            free_shipping: true
+            tracking: true
+          - service_code: service_code
+            value: 1.0246457001441578
+            currency: currency
+            company: company
+            min_days: 1
+            max_days: 6
+            shipping_from: shipping_from
+            delivery_date: delivery_date
+            guaranteed_delivery_time: 7
+            free_shipping: true
+            tracking: true
+          category_path: category_path
+          category_name: category_name
+          breadcrumbs:
+          - breadcrumbs
+          - breadcrumbs
+          sales: 1200
+          avail_quantity: 976
+          in_stock: true
+          can_ship: true
+          is_not_found: true
+          has_welcome_discount: true
+          has_one_time_discount: true
+          description: ""
+          created_at: 2000-01-23T04:56:07.000+00:00
+          updated_at: 2000-01-23T04:56:07.000+00:00
+        count: 40
+        total_results: 1280
+        page: 1
+        page_size: 40
+        total_pages: 32
+        has_next_page: true
+        has_previous_page: false
+        updated_at: 2026-06-18T12:00:00Z
+      properties:
+        products:
+          description: |
+            Catalog products for this page (empty when the page is beyond the last). Each item uses the same shape as the Get Product Info response, but only the card-level fields available on the store page are populated (id, title, img_url, price, ratings, review_amount, sales); the remaining fields are omitted or left at their zero value.
+          items:
+            $ref: "#/components/schemas/Product"
+          type: array
+        count:
+          description: Number of products returned on this page
+          example: 40
+          type: integer
+        total_results:
+          description: Total number of products in the store across all pages
+          example: 1280
+          type: integer
+        page:
+          example: 1
+          type: integer
+        page_size:
+          description: Fixed page size for the catalog endpoint
+          example: 40
+          type: integer
+        total_pages:
+          description: Total number of pages (ceil(total_results / page_size))
+          example: 32
+          type: integer
+        has_next_page:
+          description: Whether a next page can be fetched. Always false when this
+            page returned no products.
+          example: true
+          type: boolean
+        has_previous_page:
+          description: Whether a previous page exists (page > 1)
+          example: false
+          type: boolean
+        updated_at:
+          example: 2026-06-18T12:00:00Z
+          format: date-time
+          type: string
+      type: object
+    healthCheck_200_response:
+      example:
+        status: ok
+      properties:
+        status:
+          example: ok
+          type: string
+      type: object

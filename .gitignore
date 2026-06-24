@@ -1,0 +1,38 @@
+# ─── Aligate Go SDK ─────────────────────────────────────────────────────────────
+# This repo holds the GENERATED Go client (committed, so `go get` can fetch it by tag).
+# Generated *.go files ARE tracked — only build artifacts and tooling cruft are ignored.
+
+# OpenAPI generator working files
+.openapi-generator/
+
+# ─── Go ─────────────────────────────────────────────────────────────────────────
+vendor/
+*.out
+*.test
+*.a
+.go-version
+
+# ─── OS ───────────────────────────────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# ─── Editors / IDEs ─────────────────────────────────────────────────────────────
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# ─── Secrets / env ──────────────────────────────────────────────────────────────
+.env
+.env.local
+.env.*.local
+*.env
+
+# ─── Logs ───────────────────────────────────────────────────────────────────────
+*.log

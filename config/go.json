@@ -1,0 +1,9 @@
+{
+  "packageName": "aligate",
+  "gitHost": "github.com",
+  "gitUserId": "aligate-io",
+  "gitRepoId": "aliexpress-go",
+  "isGoSubmodule": false,
+  "withGoMod": true,
+  "enumClassPrefix": true
+}
