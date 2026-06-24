@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"testing"
-	openapiclient "github.com/aligate-io/aliexpress-go"
+	openapiclient "github.com/aligate-io/aliexpress-go/v2"
 )
 
 func Test_aligate_DefaultAPIService(t *testing.T) {

@@ -32,11 +32,11 @@ import (
 	"context"
 	"fmt"
 	"os"
-	openapiclient "github.com/aligate-io/aliexpress-go"
+	openapiclient "github.com/aligate-io/aliexpress-go/v2"
 )
 
 func main() {
-	productId := int32(1005004530469845) // int32 | AliExpress product ID, taken from the product page URL.
+	productId := int64(1005004530469845) // int64 | AliExpress product ID, taken from the product page URL.
 	country := "PL" // string | Country code (ISO 3166-1 alpha-2) used for pricing and shipping eligibility.
 	currency := "PLN" // string | Currency code (ISO 4217) for the returned prices.
 	locale := "en_US" // string | Response language locale. (optional) (default to "en_US")
@@ -66,7 +66,7 @@ Other parameters are passed through a pointer to a apiGetProductInfoRequest stru
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **productId** | **int32** | AliExpress product ID, taken from the product page URL. | 
+ **productId** | **int64** | AliExpress product ID, taken from the product page URL. | 
  **country** | **string** | Country code (ISO 3166-1 alpha-2) used for pricing and shipping eligibility. | 
  **currency** | **string** | Currency code (ISO 4217) for the returned prices. | 
  **locale** | **string** | Response language locale. | [default to &quot;en_US&quot;]
@@ -108,11 +108,11 @@ import (
 	"context"
 	"fmt"
 	"os"
-	openapiclient "github.com/aligate-io/aliexpress-go"
+	openapiclient "github.com/aligate-io/aliexpress-go/v2"
 )
 
 func main() {
-	productId := int32(1005004530469845) // int32 | AliExpress product ID, taken from the product page URL.
+	productId := int64(1005004530469845) // int64 | AliExpress product ID, taken from the product page URL.
 	country := "PL" // string | Country code (ISO 3166-1 alpha-2) used for pricing and shipping eligibility.
 	locale := "en_US" // string | Response language locale. (optional) (default to "en_US")
 	page := int32(1) // int32 | Page number of reviews to return (starts at 1). (optional) (default to 1)
@@ -143,7 +143,7 @@ Other parameters are passed through a pointer to a apiGetProductReviewsRequest s
 
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
- **productId** | **int32** | AliExpress product ID, taken from the product page URL. | 
+ **productId** | **int64** | AliExpress product ID, taken from the product page URL. | 
  **country** | **string** | Country code (ISO 3166-1 alpha-2) used for pricing and shipping eligibility. | 
  **locale** | **string** | Response language locale. | [default to &quot;en_US&quot;]
  **page** | **int32** | Page number of reviews to return (starts at 1). | [default to 1]
@@ -186,7 +186,7 @@ import (
 	"context"
 	"fmt"
 	"os"
-	openapiclient "github.com/aligate-io/aliexpress-go"
+	openapiclient "github.com/aligate-io/aliexpress-go/v2"
 )
 
 func main() {
@@ -258,7 +258,7 @@ import (
 	"context"
 	"fmt"
 	"os"
-	openapiclient "github.com/aligate-io/aliexpress-go"
+	openapiclient "github.com/aligate-io/aliexpress-go/v2"
 )
 
 func main() {
@@ -326,7 +326,7 @@ import (
 	"context"
 	"fmt"
 	"os"
-	openapiclient "github.com/aligate-io/aliexpress-go"
+	openapiclient "github.com/aligate-io/aliexpress-go/v2"
 )
 
 func main() {
@@ -400,7 +400,7 @@ import (
 	"context"
 	"fmt"
 	"os"
-	openapiclient "github.com/aligate-io/aliexpress-go"
+	openapiclient "github.com/aligate-io/aliexpress-go/v2"
 )
 
 func main() {
@@ -461,7 +461,7 @@ import (
 	"context"
 	"fmt"
 	"os"
-	openapiclient "github.com/aligate-io/aliexpress-go"
+	openapiclient "github.com/aligate-io/aliexpress-go/v2"
 )
 
 func main() {
@@ -527,7 +527,7 @@ import (
 	"context"
 	"fmt"
 	"os"
-	openapiclient "github.com/aligate-io/aliexpress-go"
+	openapiclient "github.com/aligate-io/aliexpress-go/v2"
 )
 
 func main() {

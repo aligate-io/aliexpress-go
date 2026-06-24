@@ -12,7 +12,7 @@ info:
     Search: find products by keyword or by uploading an image, returning paginated product
     results with their categories.
   title: AliExpress Parser API
-  version: "2.1"
+  version: 2.1.1
   x-category: eCommerce
   x-long-description: |
     Fetches live data from AliExpress across several endpoints: product (by product ID, country,
@@ -40,6 +40,7 @@ paths:
         required: true
         schema:
           example: 1005004530469845
+          format: int64
           type: integer
         style: form
       - description: Country code (ISO 3166-1 alpha-2) used for pricing and shipping
@@ -292,6 +293,7 @@ paths:
         required: true
         schema:
           example: 1005004530469845
+          format: int64
           type: integer
         style: form
       - description: Country code (ISO 3166-1 alpha-2) used for pricing and shipping

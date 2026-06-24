@@ -19,11 +19,11 @@ e-commerce product research.
 ## Install
 
 ```bash
-go get github.com/aligate-io/aliexpress-go
+go get github.com/aligate-io/aliexpress-go/v2
 ```
 
 ```go
-import aligate "github.com/aligate-io/aliexpress-go"
+import aligate "github.com/aligate-io/aliexpress-go/v2"
 ```
 
 ---
@@ -73,7 +73,7 @@ import (
 	"fmt"
 	"log"
 
-	aligate "github.com/aligate-io/aliexpress-go"
+	aligate "github.com/aligate-io/aliexpress-go/v2"
 )
 
 func main() {

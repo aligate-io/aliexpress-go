@@ -1,4 +1,4 @@
-module github.com/aligate-io/aliexpress-go
+module github.com/aligate-io/aliexpress-go/v2
 
 go 1.23
 
