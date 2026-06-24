@@ -57,7 +57,7 @@ jobs:
       - name: Commit regenerated code
         run: |
           git config user.name  "aligate-bot"
-          git config user.email "support@aligate.io"
+          git config user.email "admin@aligate.io"
           git add -A
           if git diff --cached --quiet; then
             echo "No changes to commit."
