@@ -57,7 +57,7 @@ check) needs two headers:
 Base URL: `https://aligate-aliexpress-data-api.p.rapidapi.com`
 
 Get a key from the **[AliGate listing on RapidAPI](https://rapidapi.com/aligate/api/aligate-aliexpress-data-api)** (linked from
-[aligate.io/docs](https://aligate.io/docs)).
+[api.aligate.io/docs](https://api.aligate.io/docs)).
 
 ---
 
@@ -103,7 +103,8 @@ func main() {
 
 ## Documentation
 
-- **Docs:** [aligate.io/docs](https://aligate.io/docs) — with a page per language.
+- **Interactive API docs (Swagger):** [api.aligate.io/docs](https://api.aligate.io/docs) — try the endpoints in-browser; request examples are cURL / HTTP.
+- **OpenAPI spec:** [api.aligate.io/openapi.yaml](https://api.aligate.io/openapi.yaml)
 - **API key & plans:** [AliGate on RapidAPI](https://rapidapi.com/aligate/api/aligate-aliexpress-data-api).
 - **Go reference:** the [`docs/`](docs) directory in this repository.
 
@@ -126,7 +127,7 @@ respective owner and is used here only to describe the data this API provides.
 
 ## Support
 
-- Website & docs: [aligate.io](https://aligate.io) · [aligate.io/docs](https://aligate.io/docs)
+- Website & docs: [aligate.io](https://aligate.io) · [api.aligate.io/docs](https://api.aligate.io/docs)
 - Email: [admin@aligate.io](mailto:admin@aligate.io)
 - Issues with the SDK: open an issue in this repository.
 
