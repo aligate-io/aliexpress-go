@@ -11,6 +11,7 @@ Method | HTTP request | Description
 [**GetSellerProducts**](DefaultAPI.md#GetSellerProducts) | **Get** /api/v2/seller/products | Get Seller Products
 [**HealthCheck**](DefaultAPI.md#HealthCheck) | **Get** /api/v2/health | Health check
 [**SearchByImage**](DefaultAPI.md#SearchByImage) | **Post** /api/v2/search/image | Search By Image
+[**SearchByImageURL**](DefaultAPI.md#SearchByImageURL) | **Get** /api/v2/search/image | Search By Image URL
 [**SearchByText**](DefaultAPI.md#SearchByText) | **Get** /api/v2/search/text | Search By Text
 
 
@@ -503,6 +504,80 @@ No authorization required
 ### HTTP request headers
 
 - **Content-Type**: application/json
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## SearchByImageURL
+
+> ImageSearchParseResponse SearchByImageURL(ctx).ImageUrl(imageUrl).Country(country).Currency(currency).Locale(locale).Page(page).Execute()
+
+Search By Image URL
+
+
+
+### Example
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	openapiclient "github.com/aligate-io/aliexpress-go/v2"
+)
+
+func main() {
+	imageUrl := "https://example.com/product-photo.jpg" // string | URL of the image to search by; downloaded server-side.
+	country := "PL" // string | Country code (ISO 3166-1 alpha-2) used for pricing and shipping eligibility.
+	currency := "PLN" // string | Currency code (ISO 4217) for the returned prices.
+	locale := "en_US" // string | Response language locale. (optional) (default to "en_US")
+	page := int32(1) // int32 | Page number of results to return (starts at 1). (optional) (default to 1)
+
+	configuration := openapiclient.NewConfiguration()
+	apiClient := openapiclient.NewAPIClient(configuration)
+	resp, r, err := apiClient.DefaultAPI.SearchByImageURL(context.Background()).ImageUrl(imageUrl).Country(country).Currency(currency).Locale(locale).Page(page).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `DefaultAPI.SearchByImageURL``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+	}
+	// response from `SearchByImageURL`: ImageSearchParseResponse
+	fmt.Fprintf(os.Stdout, "Response from `DefaultAPI.SearchByImageURL`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiSearchByImageURLRequest struct via the builder pattern
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **imageUrl** | **string** | URL of the image to search by; downloaded server-side. | 
+ **country** | **string** | Country code (ISO 3166-1 alpha-2) used for pricing and shipping eligibility. | 
+ **currency** | **string** | Currency code (ISO 4217) for the returned prices. | 
+ **locale** | **string** | Response language locale. | [default to &quot;en_US&quot;]
+ **page** | **int32** | Page number of results to return (starts at 1). | [default to 1]
+
+### Return type
+
+[**ImageSearchParseResponse**](ImageSearchParseResponse.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
 - **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
