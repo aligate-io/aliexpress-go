@@ -4,7 +4,8 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**Image64** | **string** | Base64-encoded image bytes to search by. | 
+**Image64** | Pointer to **string** | Base64-encoded image bytes to search by. Provide either this or image_url. | [optional] 
+**ImageUrl** | Pointer to **string** | URL of the image to search by; downloaded server-side. Provide either this or image64. | [optional] 
 **Country** | **string** | Country code (ISO 3166-1 alpha-2) used for pricing and shipping eligibility. | 
 **Currency** | **string** | Currency code (ISO 4217) for the returned prices. | 
 **Locale** | Pointer to **string** | Response language locale. | [optional] [default to "en_US"]
@@ -14,7 +15,7 @@ Name | Type | Description | Notes
 
 ### NewImageSearchRequest
 
-`func NewImageSearchRequest(image64 string, country string, currency string, ) *ImageSearchRequest`
+`func NewImageSearchRequest(country string, currency string, ) *ImageSearchRequest`
 
 NewImageSearchRequest instantiates a new ImageSearchRequest object
 This constructor will assign default values to properties that have it defined,
@@ -48,6 +49,36 @@ and a boolean to check if the value has been set.
 
 SetImage64 sets Image64 field to given value.
 
+### HasImage64
+
+`func (o *ImageSearchRequest) HasImage64() bool`
+
+HasImage64 returns a boolean if a field has been set.
+
+### GetImageUrl
+
+`func (o *ImageSearchRequest) GetImageUrl() string`
+
+GetImageUrl returns the ImageUrl field if non-nil, zero value otherwise.
+
+### GetImageUrlOk
+
+`func (o *ImageSearchRequest) GetImageUrlOk() (*string, bool)`
+
+GetImageUrlOk returns a tuple with the ImageUrl field if it's non-nil, zero value otherwise
+and a boolean to check if the value has been set.
+
+### SetImageUrl
+
+`func (o *ImageSearchRequest) SetImageUrl(v string)`
+
+SetImageUrl sets ImageUrl field to given value.
+
+### HasImageUrl
+
+`func (o *ImageSearchRequest) HasImageUrl() bool`
+
+HasImageUrl returns a boolean if a field has been set.
 
 ### GetCountry
 

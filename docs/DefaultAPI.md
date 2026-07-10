@@ -465,7 +465,7 @@ import (
 )
 
 func main() {
-	imageSearchRequest := *openapiclient.NewImageSearchRequest("/9j/4AAQSkZJRgABAQEAYABgAAD...", "US", "USD") // ImageSearchRequest | 
+	imageSearchRequest := *openapiclient.NewImageSearchRequest("US", "USD") // ImageSearchRequest | 
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
