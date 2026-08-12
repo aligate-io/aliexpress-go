@@ -14,37 +14,38 @@ import (
 	"encoding/json"
 )
 
-// checks if the SellerProductsParseResponse type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &SellerProductsParseResponse{}
+// checks if the ShippingParseResponse type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &ShippingParseResponse{}
 
-// SellerProductsParseResponse Top-level response envelope returned by the gateway for seller-catalog requests
-type SellerProductsParseResponse struct {
-	Meta *SellerProductsMeta `json:"meta,omitempty"`
-	Settings *SellerProductsSettings `json:"settings,omitempty"`
-	Item *SellerProductsResult `json:"item,omitempty"`
+// ShippingParseResponse Top-level response envelope returned by the gateway for shipping requests
+type ShippingParseResponse struct {
+	Meta *ParseMeta `json:"meta,omitempty"`
+	Settings *ShippingSettings `json:"settings,omitempty"`
+	// Shipping methods available for the requested product and country (empty on failure)
+	Item []ShippingMethod `json:"item,omitempty"`
 }
 
-// NewSellerProductsParseResponse instantiates a new SellerProductsParseResponse object
+// NewShippingParseResponse instantiates a new ShippingParseResponse object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewSellerProductsParseResponse() *SellerProductsParseResponse {
-	this := SellerProductsParseResponse{}
+func NewShippingParseResponse() *ShippingParseResponse {
+	this := ShippingParseResponse{}
 	return &this
 }
 
-// NewSellerProductsParseResponseWithDefaults instantiates a new SellerProductsParseResponse object
+// NewShippingParseResponseWithDefaults instantiates a new ShippingParseResponse object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewSellerProductsParseResponseWithDefaults() *SellerProductsParseResponse {
-	this := SellerProductsParseResponse{}
+func NewShippingParseResponseWithDefaults() *ShippingParseResponse {
+	this := ShippingParseResponse{}
 	return &this
 }
 
 // GetMeta returns the Meta field value if set, zero value otherwise.
-func (o *SellerProductsParseResponse) GetMeta() SellerProductsMeta {
+func (o *ShippingParseResponse) GetMeta() ParseMeta {
 	if o == nil || IsNil(o.Meta) {
-		var ret SellerProductsMeta
+		var ret ParseMeta
 		return ret
 	}
 	return *o.Meta
@@ -52,7 +53,7 @@ func (o *SellerProductsParseResponse) GetMeta() SellerProductsMeta {
 
 // GetMetaOk returns a tuple with the Meta field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *SellerProductsParseResponse) GetMetaOk() (*SellerProductsMeta, bool) {
+func (o *ShippingParseResponse) GetMetaOk() (*ParseMeta, bool) {
 	if o == nil || IsNil(o.Meta) {
 		return nil, false
 	}
@@ -60,7 +61,7 @@ func (o *SellerProductsParseResponse) GetMetaOk() (*SellerProductsMeta, bool) {
 }
 
 // HasMeta returns a boolean if a field has been set.
-func (o *SellerProductsParseResponse) HasMeta() bool {
+func (o *ShippingParseResponse) HasMeta() bool {
 	if o != nil && !IsNil(o.Meta) {
 		return true
 	}
@@ -68,15 +69,15 @@ func (o *SellerProductsParseResponse) HasMeta() bool {
 	return false
 }
 
-// SetMeta gets a reference to the given SellerProductsMeta and assigns it to the Meta field.
-func (o *SellerProductsParseResponse) SetMeta(v SellerProductsMeta) {
+// SetMeta gets a reference to the given ParseMeta and assigns it to the Meta field.
+func (o *ShippingParseResponse) SetMeta(v ParseMeta) {
 	o.Meta = &v
 }
 
 // GetSettings returns the Settings field value if set, zero value otherwise.
-func (o *SellerProductsParseResponse) GetSettings() SellerProductsSettings {
+func (o *ShippingParseResponse) GetSettings() ShippingSettings {
 	if o == nil || IsNil(o.Settings) {
-		var ret SellerProductsSettings
+		var ret ShippingSettings
 		return ret
 	}
 	return *o.Settings
@@ -84,7 +85,7 @@ func (o *SellerProductsParseResponse) GetSettings() SellerProductsSettings {
 
 // GetSettingsOk returns a tuple with the Settings field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *SellerProductsParseResponse) GetSettingsOk() (*SellerProductsSettings, bool) {
+func (o *ShippingParseResponse) GetSettingsOk() (*ShippingSettings, bool) {
 	if o == nil || IsNil(o.Settings) {
 		return nil, false
 	}
@@ -92,7 +93,7 @@ func (o *SellerProductsParseResponse) GetSettingsOk() (*SellerProductsSettings, 
 }
 
 // HasSettings returns a boolean if a field has been set.
-func (o *SellerProductsParseResponse) HasSettings() bool {
+func (o *ShippingParseResponse) HasSettings() bool {
 	if o != nil && !IsNil(o.Settings) {
 		return true
 	}
@@ -100,23 +101,23 @@ func (o *SellerProductsParseResponse) HasSettings() bool {
 	return false
 }
 
-// SetSettings gets a reference to the given SellerProductsSettings and assigns it to the Settings field.
-func (o *SellerProductsParseResponse) SetSettings(v SellerProductsSettings) {
+// SetSettings gets a reference to the given ShippingSettings and assigns it to the Settings field.
+func (o *ShippingParseResponse) SetSettings(v ShippingSettings) {
 	o.Settings = &v
 }
 
 // GetItem returns the Item field value if set, zero value otherwise.
-func (o *SellerProductsParseResponse) GetItem() SellerProductsResult {
+func (o *ShippingParseResponse) GetItem() []ShippingMethod {
 	if o == nil || IsNil(o.Item) {
-		var ret SellerProductsResult
+		var ret []ShippingMethod
 		return ret
 	}
-	return *o.Item
+	return o.Item
 }
 
 // GetItemOk returns a tuple with the Item field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *SellerProductsParseResponse) GetItemOk() (*SellerProductsResult, bool) {
+func (o *ShippingParseResponse) GetItemOk() ([]ShippingMethod, bool) {
 	if o == nil || IsNil(o.Item) {
 		return nil, false
 	}
@@ -124,7 +125,7 @@ func (o *SellerProductsParseResponse) GetItemOk() (*SellerProductsResult, bool) 
 }
 
 // HasItem returns a boolean if a field has been set.
-func (o *SellerProductsParseResponse) HasItem() bool {
+func (o *ShippingParseResponse) HasItem() bool {
 	if o != nil && !IsNil(o.Item) {
 		return true
 	}
@@ -132,12 +133,12 @@ func (o *SellerProductsParseResponse) HasItem() bool {
 	return false
 }
 
-// SetItem gets a reference to the given SellerProductsResult and assigns it to the Item field.
-func (o *SellerProductsParseResponse) SetItem(v SellerProductsResult) {
-	o.Item = &v
+// SetItem gets a reference to the given []ShippingMethod and assigns it to the Item field.
+func (o *ShippingParseResponse) SetItem(v []ShippingMethod) {
+	o.Item = v
 }
 
-func (o SellerProductsParseResponse) MarshalJSON() ([]byte, error) {
+func (o ShippingParseResponse) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -145,7 +146,7 @@ func (o SellerProductsParseResponse) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o SellerProductsParseResponse) ToMap() (map[string]interface{}, error) {
+func (o ShippingParseResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Meta) {
 		toSerialize["meta"] = o.Meta
@@ -159,38 +160,38 @@ func (o SellerProductsParseResponse) ToMap() (map[string]interface{}, error) {
 	return toSerialize, nil
 }
 
-type NullableSellerProductsParseResponse struct {
-	value *SellerProductsParseResponse
+type NullableShippingParseResponse struct {
+	value *ShippingParseResponse
 	isSet bool
 }
 
-func (v NullableSellerProductsParseResponse) Get() *SellerProductsParseResponse {
+func (v NullableShippingParseResponse) Get() *ShippingParseResponse {
 	return v.value
 }
 
-func (v *NullableSellerProductsParseResponse) Set(val *SellerProductsParseResponse) {
+func (v *NullableShippingParseResponse) Set(val *ShippingParseResponse) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableSellerProductsParseResponse) IsSet() bool {
+func (v NullableShippingParseResponse) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableSellerProductsParseResponse) Unset() {
+func (v *NullableShippingParseResponse) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableSellerProductsParseResponse(val *SellerProductsParseResponse) *NullableSellerProductsParseResponse {
-	return &NullableSellerProductsParseResponse{value: val, isSet: true}
+func NewNullableShippingParseResponse(val *ShippingParseResponse) *NullableShippingParseResponse {
+	return &NullableShippingParseResponse{value: val, isSet: true}
 }
 
-func (v NullableSellerProductsParseResponse) MarshalJSON() ([]byte, error) {
+func (v NullableShippingParseResponse) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableSellerProductsParseResponse) UnmarshalJSON(src []byte) error {
+func (v *NullableShippingParseResponse) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

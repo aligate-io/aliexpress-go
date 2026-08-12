@@ -6,6 +6,7 @@ Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**GetProductInfo**](DefaultAPI.md#GetProductInfo) | **Get** /api/v2/product | Get Product Info
 [**GetProductReviews**](DefaultAPI.md#GetProductReviews) | **Get** /api/v2/product/reviews | Get Product Reviews
+[**GetProductShipping**](DefaultAPI.md#GetProductShipping) | **Get** /api/v2/product/shipping-h5 | Get Product Shipping
 [**GetSellerCoupons**](DefaultAPI.md#GetSellerCoupons) | **Get** /api/v2/seller/coupons | Get Seller Coupons
 [**GetSellerInfo**](DefaultAPI.md#GetSellerInfo) | **Get** /api/v2/seller | Get Seller Info
 [**GetSellerProducts**](DefaultAPI.md#GetSellerProducts) | **Get** /api/v2/seller/products | Get Seller Products
@@ -155,6 +156,78 @@ Name | Type | Description  | Notes
 ### Return type
 
 [**ReviewsParseResponse**](ReviewsParseResponse.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints)
+[[Back to Model list]](../README.md#documentation-for-models)
+[[Back to README]](../README.md)
+
+
+## GetProductShipping
+
+> ShippingParseResponse GetProductShipping(ctx).ProductId(productId).Country(country).Currency(currency).Locale(locale).Execute()
+
+Get Product Shipping
+
+
+
+### Example
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+	openapiclient "github.com/aligate-io/aliexpress-go/v2"
+)
+
+func main() {
+	productId := int64(1005004530469845) // int64 | AliExpress product ID, taken from the product page URL.
+	country := "PL" // string | Country code (ISO 3166-1 alpha-2) used for pricing and shipping eligibility.
+	currency := "PLN" // string | Currency code (ISO 4217) for the returned prices.
+	locale := "en_US" // string | Response language locale. (optional) (default to "en_US")
+
+	configuration := openapiclient.NewConfiguration()
+	apiClient := openapiclient.NewAPIClient(configuration)
+	resp, r, err := apiClient.DefaultAPI.GetProductShipping(context.Background()).ProductId(productId).Country(country).Currency(currency).Locale(locale).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `DefaultAPI.GetProductShipping``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+	}
+	// response from `GetProductShipping`: ShippingParseResponse
+	fmt.Fprintf(os.Stdout, "Response from `DefaultAPI.GetProductShipping`: %v\n", resp)
+}
+```
+
+### Path Parameters
+
+
+
+### Other Parameters
+
+Other parameters are passed through a pointer to a apiGetProductShippingRequest struct via the builder pattern
+
+
+Name | Type | Description  | Notes
+------------- | ------------- | ------------- | -------------
+ **productId** | **int64** | AliExpress product ID, taken from the product page URL. | 
+ **country** | **string** | Country code (ISO 3166-1 alpha-2) used for pricing and shipping eligibility. | 
+ **currency** | **string** | Currency code (ISO 4217) for the returned prices. | 
+ **locale** | **string** | Response language locale. | [default to &quot;en_US&quot;]
+
+### Return type
+
+[**ShippingParseResponse**](ShippingParseResponse.md)
 
 ### Authorization
 
