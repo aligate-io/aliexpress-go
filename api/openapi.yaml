@@ -2,25 +2,29 @@ openapi: 3.0.3
 info:
   description: |
     Real-time AliExpress data parser covering products, product reviews, sellers, store
-    coupons, a seller's product catalog, and product search by text or image.
+    coupons, a seller's product catalog, product shipping, and product search by text or
+    image.
     Products: pricing, stock status, shipping options, seller information, product
     configurations (SKUs), and more - scoped to a specific country and currency.
     Reviews: customer ratings and feedback for a product.
     Sellers: full store profile with ratings, feedback, and categories.
     Coupons: active seller coupon codes with discounts, thresholds, budgets, and expiry.
     Seller products: a store's product catalog, paginated and best-selling first.
+    Shipping: shipping methods for a product with cost, carrier, and delivery estimate.
     Search: find products by keyword or by uploading an image, returning paginated product
     results with their categories.
   title: AliExpress Parser API
-  version: 2.3.0
+  version: 2.5.0
   x-category: eCommerce
   x-long-description: |
     Fetches live data from AliExpress across several endpoints: product (by product ID, country,
     and currency), product reviews (by product ID), seller (store profile by store number),
     seller coupons (active coupon campaigns by store number, shipping country, and currency),
     seller products (a store's paginated product catalog by store number, shipping country, and
-    currency), text search (products matching a keyword), and image search (products matching an
-    uploaded image). Prices, shipping options, coupon eligibility, and search results are returned
+    currency), product shipping (shipping methods with cost, carrier, and delivery window by
+    product ID, shipping country, and currency), text search (products matching a keyword), and
+    image search (products matching an uploaded image). Prices, shipping options, coupon
+    eligibility, and search results are returned
     for the requested country and currency. Typical response time is 1-5 seconds.
 servers:
 - url: https://aligate-aliexpress-data-api.p.rapidapi.com
@@ -514,6 +518,236 @@ paths:
                 $ref: "#/components/schemas/Error"
           description: Reviews parser not configured on this deployment
       summary: Get Product Reviews
+  /api/v2/product/shipping-h5:
+    get:
+      description: |
+        Returns the shipping methods available for an AliExpress product in the requested
+        country: cost, currency, carrier, estimated delivery window, and the free-shipping
+        and tracking flags. Costs are resolved for the requested country and currency.
+      operationId: Get Product Shipping
+      parameters:
+      - description: "AliExpress product ID, taken from the product page URL."
+        explode: true
+        in: query
+        name: product_id
+        required: true
+        schema:
+          example: 1005004530469845
+          format: int64
+          type: integer
+        style: form
+      - description: Country code (ISO 3166-1 alpha-2) used for pricing and shipping
+          eligibility.
+        explode: true
+        in: query
+        name: country
+        required: true
+        schema:
+          enum:
+          - US
+          - CA
+          - MX
+          - BR
+          - AR
+          - CL
+          - CO
+          - PE
+          - EC
+          - UY
+          - VE
+          - CR
+          - PA
+          - DO
+          - GT
+          - GB
+          - IE
+          - FR
+          - DE
+          - ES
+          - PT
+          - IT
+          - NL
+          - BE
+          - LU
+          - AT
+          - CH
+          - SE
+          - "false"
+          - DK
+          - FI
+          - IS
+          - PL
+          - CZ
+          - SK
+          - HU
+          - RO
+          - BG
+          - GR
+          - HR
+          - SI
+          - LT
+          - LV
+          - EE
+          - RS
+          - UA
+          - BY
+          - RU
+          - TR
+          - IL
+          - SA
+          - AE
+          - QA
+          - KW
+          - BH
+          - OM
+          - JO
+          - LB
+          - IQ
+          - AZ
+          - GE
+          - KZ
+          - UZ
+          - CN
+          - HK
+          - TW
+          - JP
+          - KR
+          - IN
+          - PK
+          - BD
+          - LK
+          - ID
+          - TH
+          - VN
+          - MY
+          - SG
+          - PH
+          - KH
+          - AU
+          - NZ
+          - ZA
+          - NG
+          - EG
+          - MA
+          - DZ
+          - TN
+          - KE
+          - GH
+          example: PL
+          type: string
+        style: form
+      - description: Currency code (ISO 4217) for the returned prices.
+        explode: true
+        in: query
+        name: currency
+        required: true
+        schema:
+          enum:
+          - USD
+          - EUR
+          - GBP
+          - AUD
+          - CAD
+          - RUB
+          - BRL
+          - CLP
+          - COP
+          - MXN
+          - ILS
+          - INR
+          - JPY
+          - KRW
+          - NOK
+          - NZD
+          - PHP
+          - PLN
+          - SEK
+          - THB
+          - TRY
+          - UAH
+          - VND
+          - IDR
+          - AED
+          - SAR
+          - CHF
+          - CZK
+          - DKK
+          - HKD
+          - HUF
+          - SGD
+          - ZAR
+          - KZT
+          - MYR
+          - TWD
+          example: PLN
+          type: string
+        style: form
+      - description: Response language locale.
+        explode: true
+        in: query
+        name: locale
+        required: false
+        schema:
+          default: en_US
+          enum:
+          - en_US
+          - en_GB
+          - es_ES
+          - es_CO
+          - pt_BR
+          - pt_PT
+          - fr_FR
+          - de_DE
+          - it_IT
+          - nl_NL
+          - pl_PL
+          - ru_RU
+          - ru_PL
+          - tr_TR
+          - ko_KR
+          - ja_JP
+          - th_TH
+          - vi_VN
+          - id_ID
+          - ar_SA
+          - he_IL
+          - uk_UA
+          - zh_CN
+          example: en_US
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ShippingParseResponse"
+          description: Shipping methods successfully resolved
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Missing or invalid query parameters
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Invalid or missing RapidAPI credentials
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Product not found on AliExpress
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Shipping parser not configured on this deployment
+      summary: Get Product Shipping
   /api/v2/seller:
     get:
       description: |
@@ -2505,6 +2739,95 @@ components:
           type: boolean
         tracking:
           type: boolean
+      type: object
+    ShippingParseResponse:
+      description: Top-level response envelope returned by the gateway for shipping
+        requests
+      example:
+        meta:
+          code: 200
+          attempt: 1
+          v: glo-1.0.0
+          source: referral
+          request_time: 2026-06-05 12:00:00
+          execution_time: 1.23s
+          trace_id: trace_id
+          pgeo: pgeo
+          hedge_fired: true
+          duration_ms: 1234
+        settings:
+          product_id: 1005004530469845
+          sku_id: "12000038646386"
+          country: PL
+          currency: PLN
+          locale: en_US
+          item_id: 1005004530469845
+        item:
+        - service_code: service_code
+          value: 1.0246457001441578
+          currency: currency
+          company: company
+          min_days: 1
+          max_days: 6
+          shipping_from: shipping_from
+          delivery_date: delivery_date
+          guaranteed_delivery_time: 7
+          free_shipping: true
+          tracking: true
+        - service_code: service_code
+          value: 1.0246457001441578
+          currency: currency
+          company: company
+          min_days: 1
+          max_days: 6
+          shipping_from: shipping_from
+          delivery_date: delivery_date
+          guaranteed_delivery_time: 7
+          free_shipping: true
+          tracking: true
+      properties:
+        meta:
+          $ref: "#/components/schemas/ParseMeta"
+        settings:
+          $ref: "#/components/schemas/ShippingSettings"
+        item:
+          description: Shipping methods available for the requested product and country
+            (empty on failure)
+          items:
+            $ref: "#/components/schemas/ShippingMethod"
+          type: array
+      type: object
+    ShippingSettings:
+      description: |
+        Echo of the shipping request. product_id, sku_id, country and currency are set when the shipping methods were resolved; locale, currency, country and item_id are set when the parse failed and no methods are returned.
+      example:
+        product_id: 1005004530469845
+        sku_id: "12000038646386"
+        country: PL
+        currency: PLN
+        locale: en_US
+        item_id: 1005004530469845
+      properties:
+        product_id:
+          example: 1005004530469845
+          format: int64
+          type: integer
+        sku_id:
+          example: "12000038646386"
+          type: string
+        country:
+          example: PL
+          type: string
+        currency:
+          example: PLN
+          type: string
+        locale:
+          example: en_US
+          type: string
+        item_id:
+          example: 1005004530469845
+          format: int64
+          type: integer
       type: object
     SellerParseResponse:
       description: Top-level response envelope returned by the gateway for seller
