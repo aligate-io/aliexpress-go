@@ -11,6 +11,8 @@ package aligate
 
 import (
 	"context"
+	"net/http"
+	"net/http/httptest"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"testing"
@@ -91,6 +93,67 @@ func Test_aligate_DefaultAPIService(t *testing.T) {
 		require.Nil(t, err)
 		require.NotNil(t, resp)
 		assert.Equal(t, 200, httpRes.StatusCode)
+
+	})
+
+	t.Run("Test DefaultAPIService GetProductShipping rejects a missing country", func(t *testing.T) {
+
+		resp, httpRes, err := apiClient.DefaultAPI.GetProductShipping(context.Background()).
+			ProductId(1005006133180174).
+			Currency("USD").
+			Execute()
+
+		require.Nil(t, resp)
+		require.Nil(t, httpRes)
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "country")
+
+	})
+
+	t.Run("Test DefaultAPIService GetProductShipping rejects a missing currency", func(t *testing.T) {
+
+		resp, httpRes, err := apiClient.DefaultAPI.GetProductShipping(context.Background()).
+			ProductId(1005006133180174).
+			Country("US").
+			Execute()
+
+		require.Nil(t, resp)
+		require.Nil(t, httpRes)
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "currency")
+
+	})
+
+	t.Run("Test DefaultAPIService GetProductShipping decodes a failed lookup's response", func(t *testing.T) {
+
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte(`{"settings":{"locale":"en_US","currency":"USD","country":"US","item_id":1005006133180174},"item":[]}`))
+		}))
+		defer server.Close()
+
+		cfg := openapiclient.NewConfiguration()
+		cfg.Servers = openapiclient.ServerConfigurations{{URL: server.URL}}
+		client := openapiclient.NewAPIClient(cfg)
+
+		resp, httpRes, err := client.DefaultAPI.GetProductShipping(context.Background()).
+			ProductId(0).
+			Country("US").
+			Currency("USD").
+			Execute()
+
+		require.Nil(t, err)
+		require.NotNil(t, httpRes)
+		assert.Equal(t, 200, httpRes.StatusCode)
+		require.NotNil(t, resp)
+		require.NotNil(t, resp.Settings)
+		assert.Equal(t, "en_US", resp.Settings.GetLocale())
+		assert.Equal(t, "USD", resp.Settings.GetCurrency())
+		assert.Equal(t, "US", resp.Settings.GetCountry())
+		assert.Equal(t, int64(1005006133180174), resp.Settings.GetItemId())
+		assert.False(t, resp.Settings.HasProductId())
+		assert.Empty(t, resp.Item)
 
 	})
 
