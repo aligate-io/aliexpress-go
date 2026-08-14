@@ -84,11 +84,11 @@ func Test_aligate_DefaultAPIService(t *testing.T) {
 
 	})
 
-	t.Run("Test DefaultAPIService GetProductShipping", func(t *testing.T) {
+	t.Run("Test DefaultAPIService GetShippingInfo", func(t *testing.T) {
 
 		t.Skip("skip test")  // remove to run test
 
-		resp, httpRes, err := apiClient.DefaultAPI.GetProductShipping(context.Background()).Execute()
+		resp, httpRes, err := apiClient.DefaultAPI.GetShippingInfo(context.Background()).Execute()
 
 		require.Nil(t, err)
 		require.NotNil(t, resp)
@@ -96,9 +96,9 @@ func Test_aligate_DefaultAPIService(t *testing.T) {
 
 	})
 
-	t.Run("Test DefaultAPIService GetProductShipping rejects a missing country", func(t *testing.T) {
+	t.Run("Test DefaultAPIService GetShippingInfo rejects a missing country", func(t *testing.T) {
 
-		resp, httpRes, err := apiClient.DefaultAPI.GetProductShipping(context.Background()).
+		resp, httpRes, err := apiClient.DefaultAPI.GetShippingInfo(context.Background()).
 			ProductId(1005006133180174).
 			Currency("USD").
 			Execute()
@@ -110,9 +110,9 @@ func Test_aligate_DefaultAPIService(t *testing.T) {
 
 	})
 
-	t.Run("Test DefaultAPIService GetProductShipping rejects a missing currency", func(t *testing.T) {
+	t.Run("Test DefaultAPIService GetShippingInfo rejects a missing currency", func(t *testing.T) {
 
-		resp, httpRes, err := apiClient.DefaultAPI.GetProductShipping(context.Background()).
+		resp, httpRes, err := apiClient.DefaultAPI.GetShippingInfo(context.Background()).
 			ProductId(1005006133180174).
 			Country("US").
 			Execute()
@@ -124,7 +124,7 @@ func Test_aligate_DefaultAPIService(t *testing.T) {
 
 	})
 
-	t.Run("Test DefaultAPIService GetProductShipping decodes a failed lookup's response", func(t *testing.T) {
+	t.Run("Test DefaultAPIService GetShippingInfo decodes a failed lookup's response", func(t *testing.T) {
 
 		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.Header().Set("Content-Type", "application/json")
@@ -137,7 +137,7 @@ func Test_aligate_DefaultAPIService(t *testing.T) {
 		cfg.Servers = openapiclient.ServerConfigurations{{URL: server.URL}}
 		client := openapiclient.NewAPIClient(cfg)
 
-		resp, httpRes, err := client.DefaultAPI.GetProductShipping(context.Background()).
+		resp, httpRes, err := client.DefaultAPI.GetShippingInfo(context.Background()).
 			ProductId(0).
 			Country("US").
 			Currency("USD").
@@ -154,6 +154,111 @@ func Test_aligate_DefaultAPIService(t *testing.T) {
 		assert.Equal(t, int64(1005006133180174), resp.Settings.GetItemId())
 		assert.False(t, resp.Settings.HasProductId())
 		assert.Empty(t, resp.Item)
+
+	})
+
+	t.Run("Test DefaultAPIService GetDescription", func(t *testing.T) {
+
+		t.Skip("skip test")  // remove to run test
+
+		resp, httpRes, err := apiClient.DefaultAPI.GetDescription(context.Background()).Execute()
+
+		require.Nil(t, err)
+		require.NotNil(t, resp)
+		assert.Equal(t, 200, httpRes.StatusCode)
+
+	})
+
+	t.Run("Test DefaultAPIService GetDescription rejects a missing country", func(t *testing.T) {
+
+		resp, httpRes, err := apiClient.DefaultAPI.GetDescription(context.Background()).
+			ProductId(1005006133180174).
+			Currency("USD").
+			Execute()
+
+		require.Nil(t, resp)
+		require.Nil(t, httpRes)
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "country")
+
+	})
+
+	t.Run("Test DefaultAPIService GetDescription rejects a missing currency", func(t *testing.T) {
+
+		resp, httpRes, err := apiClient.DefaultAPI.GetDescription(context.Background()).
+			ProductId(1005006133180174).
+			Country("US").
+			Execute()
+
+		require.Nil(t, resp)
+		require.Nil(t, httpRes)
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "currency")
+
+	})
+
+	t.Run("Test DefaultAPIService GetDescription decodes a resolved description", func(t *testing.T) {
+
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte(`{"settings":{"product_id":1005006133180174,"country":"US","currency":"USD"},"item":{"html":"<h2>About this item</h2>","text":"About this item","images":["https://ae01.alicdn.com/kf/a.jpg","https://ae01.alicdn.com/kf/b.jpg"]}}`))
+		}))
+		defer server.Close()
+
+		cfg := openapiclient.NewConfiguration()
+		cfg.Servers = openapiclient.ServerConfigurations{{URL: server.URL}}
+		client := openapiclient.NewAPIClient(cfg)
+
+		resp, httpRes, err := client.DefaultAPI.GetDescription(context.Background()).
+			ProductId(1005006133180174).
+			Country("US").
+			Currency("USD").
+			Execute()
+
+		require.Nil(t, err)
+		require.NotNil(t, httpRes)
+		assert.Equal(t, 200, httpRes.StatusCode)
+		require.NotNil(t, resp)
+		require.NotNil(t, resp.Settings)
+		assert.Equal(t, int64(1005006133180174), resp.Settings.GetProductId())
+		assert.Equal(t, "US", resp.Settings.GetCountry())
+		assert.Equal(t, "USD", resp.Settings.GetCurrency())
+		require.NotNil(t, resp.Item)
+		assert.Equal(t, "<h2>About this item</h2>", resp.Item.GetHtml())
+		assert.Equal(t, "About this item", resp.Item.GetText())
+		assert.Equal(t, []string{"https://ae01.alicdn.com/kf/a.jpg", "https://ae01.alicdn.com/kf/b.jpg"}, resp.Item.GetImages())
+
+	})
+
+	t.Run("Test DefaultAPIService GetDescription decodes a failed lookup's response", func(t *testing.T) {
+
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte(`{"settings":{"locale":"en_US","currency":"USD","country":"US","item_id":1005006133180174}}`))
+		}))
+		defer server.Close()
+
+		cfg := openapiclient.NewConfiguration()
+		cfg.Servers = openapiclient.ServerConfigurations{{URL: server.URL}}
+		client := openapiclient.NewAPIClient(cfg)
+
+		resp, httpRes, err := client.DefaultAPI.GetDescription(context.Background()).
+			ProductId(0).
+			Country("US").
+			Currency("USD").
+			Execute()
+
+		require.Nil(t, err)
+		require.NotNil(t, httpRes)
+		assert.Equal(t, 200, httpRes.StatusCode)
+		require.NotNil(t, resp)
+		require.NotNil(t, resp.Settings)
+		assert.Equal(t, "en_US", resp.Settings.GetLocale())
+		assert.Equal(t, int64(1005006133180174), resp.Settings.GetItemId())
+		assert.False(t, resp.Settings.HasProductId())
+		assert.Nil(t, resp.Item)
 
 	})
 

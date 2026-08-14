@@ -14,69 +14,69 @@ import (
 	"encoding/json"
 )
 
-// checks if the SearchSettings type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &SearchSettings{}
+// checks if the DescriptionSettings type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &DescriptionSettings{}
 
-// SearchSettings Echo of the request parameters
-type SearchSettings struct {
-	Query *string `json:"query,omitempty"`
+// DescriptionSettings Echo of the description request. product_id, country and currency are set when the description was resolved; locale, currency, country and item_id are set when the parse failed and no description is returned. 
+type DescriptionSettings struct {
+	ProductId *int64 `json:"product_id,omitempty"`
 	Country *string `json:"country,omitempty"`
 	Currency *string `json:"currency,omitempty"`
 	Locale *string `json:"locale,omitempty"`
-	Page *int32 `json:"page,omitempty"`
+	ItemId *int64 `json:"item_id,omitempty"`
 }
 
-// NewSearchSettings instantiates a new SearchSettings object
+// NewDescriptionSettings instantiates a new DescriptionSettings object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewSearchSettings() *SearchSettings {
-	this := SearchSettings{}
+func NewDescriptionSettings() *DescriptionSettings {
+	this := DescriptionSettings{}
 	return &this
 }
 
-// NewSearchSettingsWithDefaults instantiates a new SearchSettings object
+// NewDescriptionSettingsWithDefaults instantiates a new DescriptionSettings object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewSearchSettingsWithDefaults() *SearchSettings {
-	this := SearchSettings{}
+func NewDescriptionSettingsWithDefaults() *DescriptionSettings {
+	this := DescriptionSettings{}
 	return &this
 }
 
-// GetQuery returns the Query field value if set, zero value otherwise.
-func (o *SearchSettings) GetQuery() string {
-	if o == nil || IsNil(o.Query) {
-		var ret string
+// GetProductId returns the ProductId field value if set, zero value otherwise.
+func (o *DescriptionSettings) GetProductId() int64 {
+	if o == nil || IsNil(o.ProductId) {
+		var ret int64
 		return ret
 	}
-	return *o.Query
+	return *o.ProductId
 }
 
-// GetQueryOk returns a tuple with the Query field value if set, nil otherwise
+// GetProductIdOk returns a tuple with the ProductId field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *SearchSettings) GetQueryOk() (*string, bool) {
-	if o == nil || IsNil(o.Query) {
+func (o *DescriptionSettings) GetProductIdOk() (*int64, bool) {
+	if o == nil || IsNil(o.ProductId) {
 		return nil, false
 	}
-	return o.Query, true
+	return o.ProductId, true
 }
 
-// HasQuery returns a boolean if a field has been set.
-func (o *SearchSettings) HasQuery() bool {
-	if o != nil && !IsNil(o.Query) {
+// HasProductId returns a boolean if a field has been set.
+func (o *DescriptionSettings) HasProductId() bool {
+	if o != nil && !IsNil(o.ProductId) {
 		return true
 	}
 
 	return false
 }
 
-// SetQuery gets a reference to the given string and assigns it to the Query field.
-func (o *SearchSettings) SetQuery(v string) {
-	o.Query = &v
+// SetProductId gets a reference to the given int64 and assigns it to the ProductId field.
+func (o *DescriptionSettings) SetProductId(v int64) {
+	o.ProductId = &v
 }
 
 // GetCountry returns the Country field value if set, zero value otherwise.
-func (o *SearchSettings) GetCountry() string {
+func (o *DescriptionSettings) GetCountry() string {
 	if o == nil || IsNil(o.Country) {
 		var ret string
 		return ret
@@ -86,7 +86,7 @@ func (o *SearchSettings) GetCountry() string {
 
 // GetCountryOk returns a tuple with the Country field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *SearchSettings) GetCountryOk() (*string, bool) {
+func (o *DescriptionSettings) GetCountryOk() (*string, bool) {
 	if o == nil || IsNil(o.Country) {
 		return nil, false
 	}
@@ -94,7 +94,7 @@ func (o *SearchSettings) GetCountryOk() (*string, bool) {
 }
 
 // HasCountry returns a boolean if a field has been set.
-func (o *SearchSettings) HasCountry() bool {
+func (o *DescriptionSettings) HasCountry() bool {
 	if o != nil && !IsNil(o.Country) {
 		return true
 	}
@@ -103,12 +103,12 @@ func (o *SearchSettings) HasCountry() bool {
 }
 
 // SetCountry gets a reference to the given string and assigns it to the Country field.
-func (o *SearchSettings) SetCountry(v string) {
+func (o *DescriptionSettings) SetCountry(v string) {
 	o.Country = &v
 }
 
 // GetCurrency returns the Currency field value if set, zero value otherwise.
-func (o *SearchSettings) GetCurrency() string {
+func (o *DescriptionSettings) GetCurrency() string {
 	if o == nil || IsNil(o.Currency) {
 		var ret string
 		return ret
@@ -118,7 +118,7 @@ func (o *SearchSettings) GetCurrency() string {
 
 // GetCurrencyOk returns a tuple with the Currency field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *SearchSettings) GetCurrencyOk() (*string, bool) {
+func (o *DescriptionSettings) GetCurrencyOk() (*string, bool) {
 	if o == nil || IsNil(o.Currency) {
 		return nil, false
 	}
@@ -126,7 +126,7 @@ func (o *SearchSettings) GetCurrencyOk() (*string, bool) {
 }
 
 // HasCurrency returns a boolean if a field has been set.
-func (o *SearchSettings) HasCurrency() bool {
+func (o *DescriptionSettings) HasCurrency() bool {
 	if o != nil && !IsNil(o.Currency) {
 		return true
 	}
@@ -135,12 +135,12 @@ func (o *SearchSettings) HasCurrency() bool {
 }
 
 // SetCurrency gets a reference to the given string and assigns it to the Currency field.
-func (o *SearchSettings) SetCurrency(v string) {
+func (o *DescriptionSettings) SetCurrency(v string) {
 	o.Currency = &v
 }
 
 // GetLocale returns the Locale field value if set, zero value otherwise.
-func (o *SearchSettings) GetLocale() string {
+func (o *DescriptionSettings) GetLocale() string {
 	if o == nil || IsNil(o.Locale) {
 		var ret string
 		return ret
@@ -150,7 +150,7 @@ func (o *SearchSettings) GetLocale() string {
 
 // GetLocaleOk returns a tuple with the Locale field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *SearchSettings) GetLocaleOk() (*string, bool) {
+func (o *DescriptionSettings) GetLocaleOk() (*string, bool) {
 	if o == nil || IsNil(o.Locale) {
 		return nil, false
 	}
@@ -158,7 +158,7 @@ func (o *SearchSettings) GetLocaleOk() (*string, bool) {
 }
 
 // HasLocale returns a boolean if a field has been set.
-func (o *SearchSettings) HasLocale() bool {
+func (o *DescriptionSettings) HasLocale() bool {
 	if o != nil && !IsNil(o.Locale) {
 		return true
 	}
@@ -167,43 +167,43 @@ func (o *SearchSettings) HasLocale() bool {
 }
 
 // SetLocale gets a reference to the given string and assigns it to the Locale field.
-func (o *SearchSettings) SetLocale(v string) {
+func (o *DescriptionSettings) SetLocale(v string) {
 	o.Locale = &v
 }
 
-// GetPage returns the Page field value if set, zero value otherwise.
-func (o *SearchSettings) GetPage() int32 {
-	if o == nil || IsNil(o.Page) {
-		var ret int32
+// GetItemId returns the ItemId field value if set, zero value otherwise.
+func (o *DescriptionSettings) GetItemId() int64 {
+	if o == nil || IsNil(o.ItemId) {
+		var ret int64
 		return ret
 	}
-	return *o.Page
+	return *o.ItemId
 }
 
-// GetPageOk returns a tuple with the Page field value if set, nil otherwise
+// GetItemIdOk returns a tuple with the ItemId field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *SearchSettings) GetPageOk() (*int32, bool) {
-	if o == nil || IsNil(o.Page) {
+func (o *DescriptionSettings) GetItemIdOk() (*int64, bool) {
+	if o == nil || IsNil(o.ItemId) {
 		return nil, false
 	}
-	return o.Page, true
+	return o.ItemId, true
 }
 
-// HasPage returns a boolean if a field has been set.
-func (o *SearchSettings) HasPage() bool {
-	if o != nil && !IsNil(o.Page) {
+// HasItemId returns a boolean if a field has been set.
+func (o *DescriptionSettings) HasItemId() bool {
+	if o != nil && !IsNil(o.ItemId) {
 		return true
 	}
 
 	return false
 }
 
-// SetPage gets a reference to the given int32 and assigns it to the Page field.
-func (o *SearchSettings) SetPage(v int32) {
-	o.Page = &v
+// SetItemId gets a reference to the given int64 and assigns it to the ItemId field.
+func (o *DescriptionSettings) SetItemId(v int64) {
+	o.ItemId = &v
 }
 
-func (o SearchSettings) MarshalJSON() ([]byte, error) {
+func (o DescriptionSettings) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -211,10 +211,10 @@ func (o SearchSettings) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o SearchSettings) ToMap() (map[string]interface{}, error) {
+func (o DescriptionSettings) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
-	if !IsNil(o.Query) {
-		toSerialize["query"] = o.Query
+	if !IsNil(o.ProductId) {
+		toSerialize["product_id"] = o.ProductId
 	}
 	if !IsNil(o.Country) {
 		toSerialize["country"] = o.Country
@@ -225,44 +225,44 @@ func (o SearchSettings) ToMap() (map[string]interface{}, error) {
 	if !IsNil(o.Locale) {
 		toSerialize["locale"] = o.Locale
 	}
-	if !IsNil(o.Page) {
-		toSerialize["page"] = o.Page
+	if !IsNil(o.ItemId) {
+		toSerialize["item_id"] = o.ItemId
 	}
 	return toSerialize, nil
 }
 
-type NullableSearchSettings struct {
-	value *SearchSettings
+type NullableDescriptionSettings struct {
+	value *DescriptionSettings
 	isSet bool
 }
 
-func (v NullableSearchSettings) Get() *SearchSettings {
+func (v NullableDescriptionSettings) Get() *DescriptionSettings {
 	return v.value
 }
 
-func (v *NullableSearchSettings) Set(val *SearchSettings) {
+func (v *NullableDescriptionSettings) Set(val *DescriptionSettings) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableSearchSettings) IsSet() bool {
+func (v NullableDescriptionSettings) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableSearchSettings) Unset() {
+func (v *NullableDescriptionSettings) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableSearchSettings(val *SearchSettings) *NullableSearchSettings {
-	return &NullableSearchSettings{value: val, isSet: true}
+func NewNullableDescriptionSettings(val *DescriptionSettings) *NullableDescriptionSettings {
+	return &NullableDescriptionSettings{value: val, isSet: true}
 }
 
-func (v NullableSearchSettings) MarshalJSON() ([]byte, error) {
+func (v NullableDescriptionSettings) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableSearchSettings) UnmarshalJSON(src []byte) error {
+func (v *NullableDescriptionSettings) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }

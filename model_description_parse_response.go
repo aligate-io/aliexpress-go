@@ -14,37 +14,37 @@ import (
 	"encoding/json"
 )
 
-// checks if the SellerParseResponse type satisfies the MappedNullable interface at compile time
-var _ MappedNullable = &SellerParseResponse{}
+// checks if the DescriptionParseResponse type satisfies the MappedNullable interface at compile time
+var _ MappedNullable = &DescriptionParseResponse{}
 
-// SellerParseResponse Top-level response envelope returned by the gateway for seller requests
-type SellerParseResponse struct {
-	Meta *SellerMeta `json:"meta,omitempty"`
-	Settings *SellerSettings `json:"settings,omitempty"`
-	Item *SellerItem `json:"item,omitempty"`
+// DescriptionParseResponse Top-level response envelope returned by the gateway for description requests
+type DescriptionParseResponse struct {
+	Meta *ParseMeta `json:"meta,omitempty"`
+	Settings *DescriptionSettings `json:"settings,omitempty"`
+	Item *ProductDescription `json:"item,omitempty"`
 }
 
-// NewSellerParseResponse instantiates a new SellerParseResponse object
+// NewDescriptionParseResponse instantiates a new DescriptionParseResponse object
 // This constructor will assign default values to properties that have it defined,
 // and makes sure properties required by API are set, but the set of arguments
 // will change when the set of required properties is changed
-func NewSellerParseResponse() *SellerParseResponse {
-	this := SellerParseResponse{}
+func NewDescriptionParseResponse() *DescriptionParseResponse {
+	this := DescriptionParseResponse{}
 	return &this
 }
 
-// NewSellerParseResponseWithDefaults instantiates a new SellerParseResponse object
+// NewDescriptionParseResponseWithDefaults instantiates a new DescriptionParseResponse object
 // This constructor will only assign default values to properties that have it defined,
 // but it doesn't guarantee that properties required by API are set
-func NewSellerParseResponseWithDefaults() *SellerParseResponse {
-	this := SellerParseResponse{}
+func NewDescriptionParseResponseWithDefaults() *DescriptionParseResponse {
+	this := DescriptionParseResponse{}
 	return &this
 }
 
 // GetMeta returns the Meta field value if set, zero value otherwise.
-func (o *SellerParseResponse) GetMeta() SellerMeta {
+func (o *DescriptionParseResponse) GetMeta() ParseMeta {
 	if o == nil || IsNil(o.Meta) {
-		var ret SellerMeta
+		var ret ParseMeta
 		return ret
 	}
 	return *o.Meta
@@ -52,7 +52,7 @@ func (o *SellerParseResponse) GetMeta() SellerMeta {
 
 // GetMetaOk returns a tuple with the Meta field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *SellerParseResponse) GetMetaOk() (*SellerMeta, bool) {
+func (o *DescriptionParseResponse) GetMetaOk() (*ParseMeta, bool) {
 	if o == nil || IsNil(o.Meta) {
 		return nil, false
 	}
@@ -60,7 +60,7 @@ func (o *SellerParseResponse) GetMetaOk() (*SellerMeta, bool) {
 }
 
 // HasMeta returns a boolean if a field has been set.
-func (o *SellerParseResponse) HasMeta() bool {
+func (o *DescriptionParseResponse) HasMeta() bool {
 	if o != nil && !IsNil(o.Meta) {
 		return true
 	}
@@ -68,15 +68,15 @@ func (o *SellerParseResponse) HasMeta() bool {
 	return false
 }
 
-// SetMeta gets a reference to the given SellerMeta and assigns it to the Meta field.
-func (o *SellerParseResponse) SetMeta(v SellerMeta) {
+// SetMeta gets a reference to the given ParseMeta and assigns it to the Meta field.
+func (o *DescriptionParseResponse) SetMeta(v ParseMeta) {
 	o.Meta = &v
 }
 
 // GetSettings returns the Settings field value if set, zero value otherwise.
-func (o *SellerParseResponse) GetSettings() SellerSettings {
+func (o *DescriptionParseResponse) GetSettings() DescriptionSettings {
 	if o == nil || IsNil(o.Settings) {
-		var ret SellerSettings
+		var ret DescriptionSettings
 		return ret
 	}
 	return *o.Settings
@@ -84,7 +84,7 @@ func (o *SellerParseResponse) GetSettings() SellerSettings {
 
 // GetSettingsOk returns a tuple with the Settings field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *SellerParseResponse) GetSettingsOk() (*SellerSettings, bool) {
+func (o *DescriptionParseResponse) GetSettingsOk() (*DescriptionSettings, bool) {
 	if o == nil || IsNil(o.Settings) {
 		return nil, false
 	}
@@ -92,7 +92,7 @@ func (o *SellerParseResponse) GetSettingsOk() (*SellerSettings, bool) {
 }
 
 // HasSettings returns a boolean if a field has been set.
-func (o *SellerParseResponse) HasSettings() bool {
+func (o *DescriptionParseResponse) HasSettings() bool {
 	if o != nil && !IsNil(o.Settings) {
 		return true
 	}
@@ -100,15 +100,15 @@ func (o *SellerParseResponse) HasSettings() bool {
 	return false
 }
 
-// SetSettings gets a reference to the given SellerSettings and assigns it to the Settings field.
-func (o *SellerParseResponse) SetSettings(v SellerSettings) {
+// SetSettings gets a reference to the given DescriptionSettings and assigns it to the Settings field.
+func (o *DescriptionParseResponse) SetSettings(v DescriptionSettings) {
 	o.Settings = &v
 }
 
 // GetItem returns the Item field value if set, zero value otherwise.
-func (o *SellerParseResponse) GetItem() SellerItem {
+func (o *DescriptionParseResponse) GetItem() ProductDescription {
 	if o == nil || IsNil(o.Item) {
-		var ret SellerItem
+		var ret ProductDescription
 		return ret
 	}
 	return *o.Item
@@ -116,7 +116,7 @@ func (o *SellerParseResponse) GetItem() SellerItem {
 
 // GetItemOk returns a tuple with the Item field value if set, nil otherwise
 // and a boolean to check if the value has been set.
-func (o *SellerParseResponse) GetItemOk() (*SellerItem, bool) {
+func (o *DescriptionParseResponse) GetItemOk() (*ProductDescription, bool) {
 	if o == nil || IsNil(o.Item) {
 		return nil, false
 	}
@@ -124,7 +124,7 @@ func (o *SellerParseResponse) GetItemOk() (*SellerItem, bool) {
 }
 
 // HasItem returns a boolean if a field has been set.
-func (o *SellerParseResponse) HasItem() bool {
+func (o *DescriptionParseResponse) HasItem() bool {
 	if o != nil && !IsNil(o.Item) {
 		return true
 	}
@@ -132,12 +132,12 @@ func (o *SellerParseResponse) HasItem() bool {
 	return false
 }
 
-// SetItem gets a reference to the given SellerItem and assigns it to the Item field.
-func (o *SellerParseResponse) SetItem(v SellerItem) {
+// SetItem gets a reference to the given ProductDescription and assigns it to the Item field.
+func (o *DescriptionParseResponse) SetItem(v ProductDescription) {
 	o.Item = &v
 }
 
-func (o SellerParseResponse) MarshalJSON() ([]byte, error) {
+func (o DescriptionParseResponse) MarshalJSON() ([]byte, error) {
 	toSerialize,err := o.ToMap()
 	if err != nil {
 		return []byte{}, err
@@ -145,7 +145,7 @@ func (o SellerParseResponse) MarshalJSON() ([]byte, error) {
 	return json.Marshal(toSerialize)
 }
 
-func (o SellerParseResponse) ToMap() (map[string]interface{}, error) {
+func (o DescriptionParseResponse) ToMap() (map[string]interface{}, error) {
 	toSerialize := map[string]interface{}{}
 	if !IsNil(o.Meta) {
 		toSerialize["meta"] = o.Meta
@@ -159,38 +159,38 @@ func (o SellerParseResponse) ToMap() (map[string]interface{}, error) {
 	return toSerialize, nil
 }
 
-type NullableSellerParseResponse struct {
-	value *SellerParseResponse
+type NullableDescriptionParseResponse struct {
+	value *DescriptionParseResponse
 	isSet bool
 }
 
-func (v NullableSellerParseResponse) Get() *SellerParseResponse {
+func (v NullableDescriptionParseResponse) Get() *DescriptionParseResponse {
 	return v.value
 }
 
-func (v *NullableSellerParseResponse) Set(val *SellerParseResponse) {
+func (v *NullableDescriptionParseResponse) Set(val *DescriptionParseResponse) {
 	v.value = val
 	v.isSet = true
 }
 
-func (v NullableSellerParseResponse) IsSet() bool {
+func (v NullableDescriptionParseResponse) IsSet() bool {
 	return v.isSet
 }
 
-func (v *NullableSellerParseResponse) Unset() {
+func (v *NullableDescriptionParseResponse) Unset() {
 	v.value = nil
 	v.isSet = false
 }
 
-func NewNullableSellerParseResponse(val *SellerParseResponse) *NullableSellerParseResponse {
-	return &NullableSellerParseResponse{value: val, isSet: true}
+func NewNullableDescriptionParseResponse(val *DescriptionParseResponse) *NullableDescriptionParseResponse {
+	return &NullableDescriptionParseResponse{value: val, isSet: true}
 }
 
-func (v NullableSellerParseResponse) MarshalJSON() ([]byte, error) {
+func (v NullableDescriptionParseResponse) MarshalJSON() ([]byte, error) {
 	return json.Marshal(v.value)
 }
 
-func (v *NullableSellerParseResponse) UnmarshalJSON(src []byte) error {
+func (v *NullableDescriptionParseResponse) UnmarshalJSON(src []byte) error {
 	v.isSet = true
 	return json.Unmarshal(src, &v.value)
 }
