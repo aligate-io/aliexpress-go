@@ -2,8 +2,8 @@ openapi: 3.0.3
 info:
   description: |
     Real-time AliExpress data parser covering products, product reviews, sellers, store
-    coupons, a seller's product catalog, product shipping, and product search by text or
-    image.
+    coupons, a seller's product catalog, product shipping, product descriptions, and product
+    search by text or image.
     Products: pricing, stock status, shipping options, seller information, product
     configurations (SKUs), and more - scoped to a specific country and currency.
     Reviews: customer ratings and feedback for a product.
@@ -11,10 +11,12 @@ info:
     Coupons: active seller coupon codes with discounts, thresholds, budgets, and expiry.
     Seller products: a store's product catalog, paginated and best-selling first.
     Shipping: shipping methods for a product with cost, carrier, and delivery estimate.
+    Description: a product's long-form description on its own - HTML, plain text, and the
+    images extracted from the description gallery.
     Search: find products by keyword or by uploading an image, returning paginated product
     results with their categories.
   title: AliExpress Parser API
-  version: 2.5.0
+  version: 2.6.1
   x-category: eCommerce
   x-long-description: |
     Fetches live data from AliExpress across several endpoints: product (by product ID, country,
@@ -22,9 +24,10 @@ info:
     seller coupons (active coupon campaigns by store number, shipping country, and currency),
     seller products (a store's paginated product catalog by store number, shipping country, and
     currency), product shipping (shipping methods with cost, carrier, and delivery window by
-    product ID, shipping country, and currency), text search (products matching a keyword), and
-    image search (products matching an uploaded image). Prices, shipping options, coupon
-    eligibility, and search results are returned
+    product ID, shipping country, and currency), product description (the long-form description
+    on its own - HTML, plain text, and gallery images - by product ID), text search (products
+    matching a keyword), and image search (products matching an uploaded image). Prices,
+    shipping options, coupon eligibility, and search results are returned
     for the requested country and currency. Typical response time is 1-5 seconds.
 servers:
 - url: https://aligate-aliexpress-data-api.p.rapidapi.com
@@ -524,7 +527,7 @@ paths:
         Returns the shipping methods available for an AliExpress product in the requested
         country: cost, currency, carrier, estimated delivery window, and the free-shipping
         and tracking flags. Costs are resolved for the requested country and currency.
-      operationId: Get Product Shipping
+      operationId: Get Shipping Info
       parameters:
       - description: "AliExpress product ID, taken from the product page URL."
         explode: true
@@ -747,7 +750,239 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
           description: Shipping parser not configured on this deployment
-      summary: Get Product Shipping
+      summary: Get Shipping Info
+  /api/v2/product/description:
+    get:
+      description: |
+        Returns only the AliExpress product's long-form description — sanitized HTML, a
+        plain-text version, and the image URLs extracted from the description gallery —
+        without the rest of the product payload. Use this endpoint when the description is
+        all that is needed instead of fetching the full product via
+        /api/v2/product?with_description=true.
+      operationId: Get Description
+      parameters:
+      - description: "AliExpress product ID, taken from the product page URL."
+        explode: true
+        in: query
+        name: product_id
+        required: true
+        schema:
+          example: 1005004530469845
+          format: int64
+          type: integer
+        style: form
+      - description: Country code (ISO 3166-1 alpha-2) used for pricing and shipping
+          eligibility.
+        explode: true
+        in: query
+        name: country
+        required: true
+        schema:
+          enum:
+          - US
+          - CA
+          - MX
+          - BR
+          - AR
+          - CL
+          - CO
+          - PE
+          - EC
+          - UY
+          - VE
+          - CR
+          - PA
+          - DO
+          - GT
+          - GB
+          - IE
+          - FR
+          - DE
+          - ES
+          - PT
+          - IT
+          - NL
+          - BE
+          - LU
+          - AT
+          - CH
+          - SE
+          - "false"
+          - DK
+          - FI
+          - IS
+          - PL
+          - CZ
+          - SK
+          - HU
+          - RO
+          - BG
+          - GR
+          - HR
+          - SI
+          - LT
+          - LV
+          - EE
+          - RS
+          - UA
+          - BY
+          - RU
+          - TR
+          - IL
+          - SA
+          - AE
+          - QA
+          - KW
+          - BH
+          - OM
+          - JO
+          - LB
+          - IQ
+          - AZ
+          - GE
+          - KZ
+          - UZ
+          - CN
+          - HK
+          - TW
+          - JP
+          - KR
+          - IN
+          - PK
+          - BD
+          - LK
+          - ID
+          - TH
+          - VN
+          - MY
+          - SG
+          - PH
+          - KH
+          - AU
+          - NZ
+          - ZA
+          - NG
+          - EG
+          - MA
+          - DZ
+          - TN
+          - KE
+          - GH
+          example: PL
+          type: string
+        style: form
+      - description: Currency code (ISO 4217) for the returned prices.
+        explode: true
+        in: query
+        name: currency
+        required: true
+        schema:
+          enum:
+          - USD
+          - EUR
+          - GBP
+          - AUD
+          - CAD
+          - RUB
+          - BRL
+          - CLP
+          - COP
+          - MXN
+          - ILS
+          - INR
+          - JPY
+          - KRW
+          - NOK
+          - NZD
+          - PHP
+          - PLN
+          - SEK
+          - THB
+          - TRY
+          - UAH
+          - VND
+          - IDR
+          - AED
+          - SAR
+          - CHF
+          - CZK
+          - DKK
+          - HKD
+          - HUF
+          - SGD
+          - ZAR
+          - KZT
+          - MYR
+          - TWD
+          example: PLN
+          type: string
+        style: form
+      - description: Response language locale.
+        explode: true
+        in: query
+        name: locale
+        required: false
+        schema:
+          default: en_US
+          enum:
+          - en_US
+          - en_GB
+          - es_ES
+          - es_CO
+          - pt_BR
+          - pt_PT
+          - fr_FR
+          - de_DE
+          - it_IT
+          - nl_NL
+          - pl_PL
+          - ru_RU
+          - ru_PL
+          - tr_TR
+          - ko_KR
+          - ja_JP
+          - th_TH
+          - vi_VN
+          - id_ID
+          - ar_SA
+          - he_IL
+          - uk_UA
+          - zh_CN
+          example: en_US
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DescriptionParseResponse"
+          description: Product description successfully resolved
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Missing or invalid query parameters
+        "401":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Invalid or missing RapidAPI credentials
+        "404":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Product not found on AliExpress
+        "503":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+          description: Description parser not configured on this deployment
+      summary: Get Description
   /api/v2/seller:
     get:
       description: |
@@ -2483,6 +2718,14 @@ components:
     ProductDescription:
       description: |
         Long-form product description. Returned only when with_description=true. Fetching it adds an extra request (~600-750 ms).
+      example:
+        html: <h2><strong>About this item:</strong></h2><h2>1. 40 Gbps 2000 MHz High
+          Speed...</h2>
+        text: "About this item: 1. 40 Gbps 2000 MHz High Speed: The Cat 8 ethernet\
+          \ cable..."
+        images:
+        - https://ae01.alicdn.com/kf/Sf4908e5557c248e59446e4791b7ae7791.jpg
+        - https://ae01.alicdn.com/kf/S60ddba7c6904492390d01f94283da4ffq.jpg
       properties:
         html:
           description: Sanitized description HTML (scripts and event-handler attributes
@@ -2815,6 +3058,71 @@ components:
         sku_id:
           example: "12000038646386"
           type: string
+        country:
+          example: PL
+          type: string
+        currency:
+          example: PLN
+          type: string
+        locale:
+          example: en_US
+          type: string
+        item_id:
+          example: 1005004530469845
+          format: int64
+          type: integer
+      type: object
+    DescriptionParseResponse:
+      description: Top-level response envelope returned by the gateway for description
+        requests
+      example:
+        meta:
+          code: 200
+          attempt: 1
+          v: glo-1.0.0
+          source: referral
+          request_time: 2026-06-05 12:00:00
+          execution_time: 1.23s
+          trace_id: trace_id
+          pgeo: pgeo
+          hedge_fired: true
+          duration_ms: 1234
+        settings:
+          product_id: 1005004530469845
+          country: PL
+          currency: PLN
+          locale: en_US
+          item_id: 1005004530469845
+        item:
+          html: <h2><strong>About this item:</strong></h2><h2>1. 40 Gbps 2000 MHz
+            High Speed...</h2>
+          text: "About this item: 1. 40 Gbps 2000 MHz High Speed: The Cat 8 ethernet\
+            \ cable..."
+          images:
+          - https://ae01.alicdn.com/kf/Sf4908e5557c248e59446e4791b7ae7791.jpg
+          - https://ae01.alicdn.com/kf/S60ddba7c6904492390d01f94283da4ffq.jpg
+      properties:
+        meta:
+          $ref: "#/components/schemas/ParseMeta"
+        settings:
+          $ref: "#/components/schemas/DescriptionSettings"
+        item:
+          $ref: "#/components/schemas/ProductDescription"
+      type: object
+    DescriptionSettings:
+      description: |
+        Echo of the description request. product_id, country and currency are set when the description was resolved; locale, currency, country and item_id are set when the parse failed and no description is returned.
+      example:
+        product_id: 1005004530469845
+        country: PL
+        currency: PLN
+        locale: en_US
+        item_id: 1005004530469845
+      properties:
+        product_id:
+          example: 1005004530469845
+          format: int64
+          type: integer
         country:
           example: PL
           type: string
