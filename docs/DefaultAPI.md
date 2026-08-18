@@ -10,7 +10,7 @@ Method | HTTP request | Description
 [**GetSellerCoupons**](DefaultAPI.md#GetSellerCoupons) | **Get** /api/v2/seller/coupons | Get Seller Coupons
 [**GetSellerInfo**](DefaultAPI.md#GetSellerInfo) | **Get** /api/v2/seller | Get Seller Info
 [**GetSellerProducts**](DefaultAPI.md#GetSellerProducts) | **Get** /api/v2/seller/products | Get Seller Products
-[**GetShippingInfo**](DefaultAPI.md#GetShippingInfo) | **Get** /api/v2/product/shipping-h5 | Get Shipping Info
+[**GetShippingInfo**](DefaultAPI.md#GetShippingInfo) | **Get** /api/v2/product/shipping | Get Shipping Info
 [**HealthCheck**](DefaultAPI.md#HealthCheck) | **Get** /api/v2/health | Health check
 [**SearchByImage**](DefaultAPI.md#SearchByImage) | **Post** /api/v2/search/image | Search By Image
 [**SearchByImageURL**](DefaultAPI.md#SearchByImageURL) | **Get** /api/v2/search/image | Search By Image URL
@@ -462,7 +462,7 @@ No authorization required
 
 ## GetShippingInfo
 
-> ShippingParseResponse GetShippingInfo(ctx).ProductId(productId).Country(country).Currency(currency).Locale(locale).Execute()
+> ShippingParseResponse GetShippingInfo(ctx).ProductId(productId).Country(country).Currency(currency).SkuId(skuId).Locale(locale).Execute()
 
 Get Shipping Info
 
@@ -484,11 +484,12 @@ func main() {
 	productId := int64(1005004530469845) // int64 | AliExpress product ID, taken from the product page URL.
 	country := "PL" // string | Country code (ISO 3166-1 alpha-2) used for pricing and shipping eligibility.
 	currency := "PLN" // string | Currency code (ISO 4217) for the returned prices.
+	skuId := "12000038646386" // string | AliExpress SKU (variant) ID. Supplying it narrows the estimate to that specific variant; it may be omitted to get the product's default shipping options.  (optional)
 	locale := "en_US" // string | Response language locale. (optional) (default to "en_US")
 
 	configuration := openapiclient.NewConfiguration()
 	apiClient := openapiclient.NewAPIClient(configuration)
-	resp, r, err := apiClient.DefaultAPI.GetShippingInfo(context.Background()).ProductId(productId).Country(country).Currency(currency).Locale(locale).Execute()
+	resp, r, err := apiClient.DefaultAPI.GetShippingInfo(context.Background()).ProductId(productId).Country(country).Currency(currency).SkuId(skuId).Locale(locale).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `DefaultAPI.GetShippingInfo``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -512,6 +513,7 @@ Name | Type | Description  | Notes
  **productId** | **int64** | AliExpress product ID, taken from the product page URL. | 
  **country** | **string** | Country code (ISO 3166-1 alpha-2) used for pricing and shipping eligibility. | 
  **currency** | **string** | Currency code (ISO 4217) for the returned prices. | 
+ **skuId** | **string** | AliExpress SKU (variant) ID. Supplying it narrows the estimate to that specific variant; it may be omitted to get the product&#39;s default shipping options.  | 
  **locale** | **string** | Response language locale. | [default to &quot;en_US&quot;]
 
 ### Return type
